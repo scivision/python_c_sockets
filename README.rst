@@ -2,7 +2,7 @@
 python_c_sockets
 =================
 
-A demo of IPv6 UDP datagram on C and Python limited by interface speed (e.g. 1Gbps)
+A demo of IPv6 UDP datagram on C and Python limited by interface speed (e.g. 1Gbps) i.e. relatively high performance code.
 
 The server (C-code) goes on the device, the Python code runs on the laptop. Of course, one can equally well use Python for both.
 
