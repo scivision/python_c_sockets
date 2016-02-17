@@ -2,7 +2,7 @@
 python_c_sockets
 =================
 
-A demo of IPv6 UDP datagram on C and Python limited by interface speed (e.g. 1Gbps) i.e. relatively high performance code.
+A demo of IPv6 UDP datagram on C and Python limited by interface speed (approaching 1Gbps on my laptop) i.e. relatively high performance code.
 
 The server (C-code) goes on the device, the Python code runs on the laptop. Of course, one can equally well use Python for both by creating a ``socksource.py`` program equivalent to ``socksource.c``.
 
@@ -43,4 +43,4 @@ Open another terminal::
 
   ./socksink.py
   
-I see <80 microseconds on my laptop.
+I see ~70 microseconds cycle time on my laptop --> 8192/70e-6 ~ 936 Mbps
