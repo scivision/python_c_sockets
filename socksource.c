@@ -17,7 +17,7 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>   // for sockaddr
+#include <arpa/inet.h>  
 
 
 #define PORT 2000
@@ -97,15 +97,18 @@ void serv(int s,int dotalk){
         //if (clistr == NULL)  error("ERROR on inet_ntop\n");
         //printf("server received datagram from %s (%s)\n", hostp->h_name, clistr);
         //printf("server received %d/%d bytes: %s\n", strlen(buf), ret, buf);
-    if (dotalk==1){
+        
+    if (dotalk==1){ // blast float32 array mode
+    	// generate dummy data stream of float32
         for (i=0; i<Nel; ++i)  array[i] = last+i;
         last+=Nel;
         
         //send length of float array first
         ret = sendto(s, &Nel,   sizeof(Nel),   0, (struct sockaddr *) &cliadd, clientlen);
+        // then send float32 array
         ret = sendto(s, array, sizeof(array), 0, (struct sockaddr *) &cliadd, clientlen);
     }
-    else{
+    else{ // echo parrot mode
         ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr *) &cliadd, clientlen);
         //if (ret < 0)  error("ERROR in sendto");
     }
