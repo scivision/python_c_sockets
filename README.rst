@@ -43,4 +43,4 @@ Open another terminal::
 
   ./socksink.py
   
-I see ~70 microseconds cycle time on my laptop --> 8192/70e-6 ~ 936 Mbps
+I see ~70 microseconds cycle time on my laptop --> 8192 / 70e-6 * 8 ~ 936 Mbps
