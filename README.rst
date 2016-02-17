@@ -39,7 +39,7 @@ Open a terminal::
   
   ./socksource 1
   
-Open another terminal:
+Open another terminal::
 
   ./socksink.py
   
