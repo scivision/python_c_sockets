@@ -26,6 +26,7 @@ open a terminal::
   ./socksource 0
   
 open second terminal::
+
   nc -u ::1 2000
   
 and you will see your text you type echoed back to you when you press Return key
