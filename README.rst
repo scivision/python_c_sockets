@@ -10,11 +10,20 @@ The data flow rate on localhost ::1 with gigabit network card is 1Gbps.
 
 
 
-Install
+Compile
 =======
+
+UDP unicast
+-----------
 ::
 
-  make socksource.c
+  gcc socksource.c -o socksource
+
+UDP multicast receiver
+----------------------
+::
+
+  gcc multicast_rx.c -o multicast_rx
   
 Usage
 =====
