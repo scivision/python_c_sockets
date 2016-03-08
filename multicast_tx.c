@@ -4,6 +4,12 @@ http://web.cs.wpi.edu/~claypool/courses/4514-B99/samples/multicast.c
 
 UDP multicast IPv6 transmit in C
 
+example
+
+./multicast_tx   #uses default interface, address, and port
+./multicast_tx ff02::1 50000 # sets address and port
+./multicast_tx ff02::1 50000 eth0  #additionally sets interface
+
 Michael Hirsch
 
 */
@@ -14,9 +20,12 @@ Michael Hirsch
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <net/if.h>
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <time.h>
+
+
 
 int main(int argc, char **argv)
 {
@@ -39,7 +48,8 @@ if (argc>2) {
    sock = socket(AF_INET6, SOCK_DGRAM, 0);
    if (sock < 0) {
      perror("socket");
-     exit(1);
+     close(sock);
+     return(EXIT_FAILURE);
    }
 // instant restart capability
   int optval = 1;
@@ -61,7 +71,24 @@ if (argc>2) {
 //    uint_l hops=1;
 //    setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &hops,sizeof(hops))
 
+// optional bind to interface
+    struct ifreq ifr;
+    if (argc>3){
+        char ifname[10];
 
+        memset(&ifr, 0, sizeof(ifr));
+        snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), ifname);
+        if ((setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0){
+            perror("interface selection error");
+            close(sock);
+            return(EXIT_FAILURE);
+        }
+
+    }
+
+bind(sock, (struct sockaddr *)&group, sizeof(group));
+
+// main loop
      int cnt;
      char message[100];
      int addrlen=sizeof(group);
@@ -72,7 +99,8 @@ if (argc>2) {
 		      (struct sockaddr *) &group, addrlen);
 	 if (cnt < 0) {
  	    perror("sendto");
-	    exit(1);
+        close(sock);
+	    return(EXIT_FAILURE);
 	 }
 	 sleep(1);
       }

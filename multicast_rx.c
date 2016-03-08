@@ -38,7 +38,7 @@ if (argc>2) {
    sock = socket(AF_INET6, SOCK_DGRAM, 0);
    if (sock < 0) {
      perror("socket");
-     exit(1);
+     return(EXIT_FAILURE);
    }
 // instant restart capability
   int optval = 1;
@@ -59,12 +59,12 @@ if (argc>2) {
       mreq.ipv6mr_interface = INADDR_ANY;   // any interface
       if (setsockopt(sock,IPPROTO_IPV6,IPV6_JOIN_GROUP, &mreq,sizeof(mreq)) < 0) {
 	     perror("setsockopt mreq");
-	     exit(1);
+	     return(EXIT_FAILURE);
       }
 
       if (bind(sock, (struct sockaddr *) &group, sizeof(group)) < 0) {
          perror("bind");
-	    exit(1);
+	     return(EXIT_FAILURE);
       }
 
 
