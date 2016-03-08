@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <netdb.h>
 #include <sys/types.h>
@@ -81,7 +82,7 @@ void serv(int s,int dotalk){
     int clientlen = sizeof(cliadd);
 
     // loop: echo UDP packets back to client
-    while (1) 
+    while (true)
     {
         memset(buf, 0,BUFSIZE);
         ret = recvfrom(s, buf, BUFSIZE, 0, (struct sockaddr *) &cliadd, &clientlen);
@@ -97,12 +98,12 @@ void serv(int s,int dotalk){
         //if (clistr == NULL)  error("ERROR on inet_ntop\n");
         //printf("server received datagram from %s (%s)\n", hostp->h_name, clistr);
         //printf("server received %d/%d bytes: %s\n", strlen(buf), ret, buf);
-        
+
     if (dotalk==1){ // blast float32 array mode
     	// generate dummy data stream of float32
         for (i=0; i<Nel; ++i)  array[i] = last+i;
         last+=Nel;
-        
+
         //send length of float array first
         ret = sendto(s, &Nel,   sizeof(Nel),   0, (struct sockaddr *) &cliadd, clientlen);
         // then send float32 array
