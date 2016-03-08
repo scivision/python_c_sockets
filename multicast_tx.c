@@ -50,6 +50,18 @@ if (argc>2) {
    group.sin6_port = htons(mcport);
    group.sin6_addr = in6addr_any;
 
+// reference 
+// https://docs.oracle.com/cd/E19455-01/806-1017/auto1/index.html
+
+// default is to loopback (loop=1) normally leave this alone.
+//    uint_t loop=1;
+//    setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &loop, sizeof(loop)) 
+
+// control number of hops within scope, default is 1 hop (single subnet)
+//    uint_l hops=1;
+//    setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &hops,sizeof(hops))
+
+
      int cnt;
      char message[100];
      int addrlen=sizeof(group);

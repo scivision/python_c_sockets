@@ -49,6 +49,10 @@ if (argc>2) {
    group.sin6_port = htons(mcport);
    group.sin6_addr = in6addr_any;
 
+// reference
+// https://docs.oracle.com/cd/E19455-01/806-1017/auto2/index.html
+
+
     //receiver multicast
       struct ipv6_mreq mreq;
       inet_pton(AF_INET6, mcgroup, &(mreq.ipv6mr_multiaddr));
