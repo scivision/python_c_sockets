@@ -1,3 +1,6 @@
+multicast_rx
+multicast_tx
+*.out
 socksource
 
 # Byte-compiled / optimized / DLL files
