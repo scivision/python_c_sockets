@@ -29,6 +29,9 @@ Michael Hirsch
 
 int main(int argc, char **argv)
 {
+// interface selection
+struct in_addr interface_addr;
+
 
 // user mode setting
 char mcgroup[39]="ff08::1";

@@ -3,11 +3,15 @@
 // based on https://www.cs.cmu.edu/afs/cs/academic/class/15213-f99/www/class26/udpserver.c
 //
 // usage:
-// make socksource.c
+// gcc socksource.c
+// ./socksource talk port
 //
 // ./socksource 1 // will return float array of sequential values length BUFSIZE/4, upon receiving a newline
 // ./socksource 0 // will echo back your text
 // nc -u ::1 2000    // assuming you selected the server to be on port 2000 below
+//
+// ref: http://tldp.org/HOWTO/Multicast-HOWTO-6.html
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -20,8 +24,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-
-#define PORT 2000
 #define BUFSIZE 8192
 
 void error(char *msg) {
@@ -36,10 +38,18 @@ int main(int argc, char **argv)
 void serv();
 struct sockaddr_in6 serveraddr;
 // user mode setting
+u_char ttl=1; //default
+
 int dotalk=0;
+int port=2000;
 if (argc>1) {
     dotalk = atoi(argv[1]);
 }
+if (argc>2) {
+    port = atoi(argv[2]);
+}
+
+
 
 
 // create socket
@@ -54,11 +64,13 @@ int s = socket(AF_INET6, SOCK_DGRAM, 0);
   memset((char *) &serveraddr, 0, sizeof(serveraddr));
   serveraddr.sin6_family = AF_INET6;
   serveraddr.sin6_addr = in6addr_any;
-  serveraddr.sin6_port = htons((unsigned short)PORT);
+  serveraddr.sin6_port = htons((unsigned short)port);
+// TTL
+  setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
 // bind socket to port
   if (bind(s, (struct sockaddr *) &serveraddr, 
 	   sizeof(serveraddr)) < 0) 
-    error("ERROR on binding");
+    perror("ERROR on binding");
 
 // do work
     serv(s,dotalk);
@@ -111,7 +123,7 @@ void serv(int s,int dotalk){
     }
     else{ // echo parrot mode
         ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr *) &cliadd, clientlen);
-        //if (ret < 0)  error("ERROR in sendto");
+        if (ret < 0)  perror("ERROR in sendto");
     }
 
     }
