@@ -10,6 +10,12 @@ The data flow rate on localhost ::1 with gigabit network card is 1Gbps.
 
 .. contents::
 
+Prereqs
+=======
+::
+
+    sudo apt-get install gcc make libhdf5-dev
+
 Compile
 =======
 ::
@@ -48,6 +54,8 @@ I see ~70 microseconds cycle time on my laptop --> 8192 / 70e-6 * 8 ~ 936 Mbps
 
 Write streaming data to HDF5
 ----------------------------
+HDF5 files can be as large as your hard drive, and these tests run extremely fast,
+so I disabled the unlimited writing so that you didn't write a huge file.
 
 Python
 ~~~~~~
