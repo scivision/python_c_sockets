@@ -1,6 +1,6 @@
 % Simple send/receive to companion UDP C-code server on localhost or other device
 % prints rolling mean of cycle time (typical <80 microseconds on localhost)
-% 
+%
 % It does 2 UDP reads per cycle:
 % 1) get number of float32 via int
 % 2) get float32 array
@@ -37,7 +37,7 @@ Nelbyte = 4; %4 bytes for float32
         else
             rtoc = mean([toc,rtoc]);
         end
-        
+
         if ~mod(i, 1000), disp(rtoc), end
 
         assert(last==dat(1)-1,num2str(last))

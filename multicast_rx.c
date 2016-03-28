@@ -70,7 +70,7 @@ if (argc>2) {
 
      char message[100];
      int cnt;
-     int addrlen=sizeof(group);
+     unsigned int addrlen=sizeof(group);
      char serverstr[INET6_ADDRSTRLEN];
 
 

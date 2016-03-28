@@ -4,35 +4,27 @@ python_c_sockets
 
 A demo of IPv6 UDP datagram on C and Python limited by interface speed (approaching 1Gbps on my laptop) i.e. relatively high performance code.
 
-The server (C-code) goes on the device, the Python code runs on the laptop. Of course, one can equally well use Python for both by creating a ``socksource.py`` program equivalent to ``socksource.c``.
+The server (C-code) goes on the device, the Python code runs on the laptop. 
 
 The data flow rate on localhost ::1 with gigabit network card is 1Gbps.
 
-
+.. contents::
 
 Compile
 =======
-
-UDP unicast
------------
 ::
 
-  gcc socksource.c -o socksource
+  make
 
-UDP multicast receiver
-----------------------
-::
-
-  gcc multicast_rx.c -o multicast_rx
   
-Usage
-=====
+Unicast
+=======
 
 Loopback
 --------
 open a terminal::
   
-  ./socksource 0
+  ./unicast_tx.out 0
   
 open second terminal::
 
@@ -46,10 +38,39 @@ This demo sends 8192 byte float32 arrays, by first sending an int telling the le
 
 Open a terminal::
   
-  ./socksource 1
+  ./unicast_tx.out 1
   
 Open another terminal::
 
-  ./socksink.py
+  ./unicast_rx.py
   
 I see ~70 microseconds cycle time on my laptop --> 8192 / 70e-6 * 8 ~ 936 Mbps
+
+Write streaming data to HDF5
+----------------------------
+
+Python
+~~~~~~
+
+Run the ``unicast_tx.out 1`` and in the second terminal window run::
+
+    ./unicast_rx.py -o test.h5
+
+
+C
+~
+
+Run the ``unicast_tx.out 1`` and in the second terminal window run::
+
+    ./unicast_rx_h5.out
+
+
+Multicast
+=========
+open a terminal::
+
+    ./multicast_tx.out
+
+open a second terminal::
+
+    ./multicast_rx.out

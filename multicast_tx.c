@@ -12,7 +12,11 @@ example
 
 Michael Hirsch
 
+ref: http://tldp.org/HOWTO/Multicast-HOWTO-6.html
 */
+
+
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -30,7 +34,7 @@ Michael Hirsch
 int main(int argc, char **argv)
 {
 // interface selection
-struct in_addr interface_addr;
+//struct in_addr interface_addr;
 
 
 // user mode setting
@@ -80,7 +84,7 @@ if (argc>2) {
         char ifname[10];
 
         memset(&ifr, 0, sizeof(ifr));
-        snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), ifname);
+        snprintf(ifr.ifr_name, sizeof(ifr.ifr_name),"%s", ifname);
         if ((setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0){
             perror("interface selection error");
             close(sock);

@@ -1,7 +1,6 @@
-multicast_rx
-multicast_tx
+*.o
 *.out
-socksource
+*.h5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
