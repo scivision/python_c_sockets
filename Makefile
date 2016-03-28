@@ -37,5 +37,5 @@ $(TARGET_multirx): $(SRC_multirx)
    
 #----------- CLEAN ----------------------------
 clean:
-	$(RM) $(TARGET_multitx) $(TARGET_multirx) $(TARGET_uni)
+	$(RM) $(TARGET_multitx) $(TARGET_multirx) $(TARGET_uni) $(TARGET_h5)
 
