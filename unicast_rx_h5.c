@@ -21,8 +21,9 @@
 #define BUFSIZE 8192
 #define Nloop 100000 // temp, get the hang of it, then we'll go unlimited writing
 
-void error(char *msg) {
+void error(char *msg, int sock) {
     perror(msg);
+    close(sock);
     exit(EXIT_FAILURE);
 }
 
@@ -58,8 +59,8 @@ int main(int argc, char **argv) {
     printf("writing data to %s\n",FILENAME);
 //------------------------------------------------------------------------------    
 
-    int s, ret, Nel;
-
+    int ret;
+    int Nel = BUFSIZE/4; // float32
     socklen_t serverlen;
     struct sockaddr_in6 serveraddr;
     struct addrinfo *server;
@@ -71,7 +72,7 @@ int main(int argc, char **argv) {
     
     int i=0;
     char buf[1]="\n";
-    float array[BUFSIZE];
+    float array[Nel];
 
     if (argc>1) 
         hostname = argv[1];
@@ -79,9 +80,9 @@ int main(int argc, char **argv) {
         port = atoi(argv[2]);
 
     /* socket: create the socket */
-    s = socket(AF_INET6, SOCK_DGRAM, 0);
+    int s = socket(AF_INET6, SOCK_DGRAM, 0);
     if (s < 0) 
-        perror("ERROR opening socket");
+        error("ERROR opening socket",s);
 
     ret = getaddrinfo(hostname,NULL,NULL,&server);
 
@@ -90,24 +91,44 @@ int main(int argc, char **argv) {
     serveraddr.sin6_family = AF_INET6;
     serveraddr.sin6_port = htons(port);
 
+    
+    bool first = true;
+    float last;
+    // loop
     while (true)
     {
     // ask server for data (demo server expects simply a line return)
     serverlen = sizeof(serveraddr);
     ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr*) &serveraddr, serverlen);
     if (ret < 0) 
-      perror("ERROR in sendto");
+      error("ERROR in sendto",s);
     
     // get the length of data
     ret = recvfrom(s, &Nel, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
     if (ret < 0) 
-      perror("ERROR in recvfrom");
+      error("ERROR in recvfrom",s);
     
 
     // get the data
     ret = recvfrom(s, array, BUFSIZE, 0, (struct sockaddr*) &serveraddr, &serverlen);
     if (ret < 0) 
-      perror("ERROR in recvfrom");
+      error("ERROR in recvfrom",s);
+
+    // check the data
+    if (first) {
+        first = false;
+        last = array[0]-1;
+        printf("Initial last: %f\n",last);
+    }
+
+    if(last!=array[0]-1){
+        printf("last: %f data: %f\n",last,array[0]-1);
+        printf("may be wrapping in float32");
+        return(EXIT_FAILURE);
+    } 
+
+
+    last = array[Nel-1];
 
     //------------------------------------------------------------------------
     // Select a hyperslab in dataset 

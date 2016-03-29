@@ -29,7 +29,11 @@ ref: http://tldp.org/HOWTO/Multicast-HOWTO-6.html
 #include <stdio.h>
 #include <time.h>
 
-
+void error(char *msg, int sock) {
+    perror(msg);
+    close(sock);
+    exit(EXIT_FAILURE);
+}
 
 int main(int argc, char **argv)
 {
@@ -53,11 +57,8 @@ if (argc>2) {
 
    /* set up socket */
    sock = socket(AF_INET6, SOCK_DGRAM, 0);
-   if (sock < 0) {
-     perror("socket");
-     close(sock);
-     return(EXIT_FAILURE);
-   }
+   if (sock < 0)
+     error("socket open fail",sock);
 // instant restart capability
   int optval = 1;
   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
@@ -85,11 +86,8 @@ if (argc>2) {
 
         memset(&ifr, 0, sizeof(ifr));
         snprintf(ifr.ifr_name, sizeof(ifr.ifr_name),"%s", ifname);
-        if ((setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0){
-            perror("interface selection error");
-            close(sock);
-            return(EXIT_FAILURE);
-        }
+        if ((setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0)
+            error("interface selection error",sock);
 
     }
 
@@ -104,11 +102,8 @@ bind(sock, (struct sockaddr *)&group, sizeof(group));
 	 sprintf(message, "%-24.24s", ctime(&t));
 	 cnt = sendto(sock, message, sizeof(message), 0,
 		      (struct sockaddr *) &group, addrlen);
-	 if (cnt < 0) {
- 	    perror("sendto");
-        close(sock);
-	    return(EXIT_FAILURE);
-	 }
+	 if (cnt < 0) 
+ 	    error("sendto",sock);
 	 sleep(1);
       }
 }

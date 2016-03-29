@@ -3,7 +3,7 @@
  based on https://www.cs.cmu.edu/afs/cs/academic/class/15213-f99/www/class26/udpserver.c
 
  usage:
- cc socksource.c
+ cc unicast_tx.c
  ./unicast_tx talk port
 
  ./unicast_tx 1 // will return float array of sequential values length BUFSIZE/4, upon receiving a newline
@@ -26,8 +26,9 @@
 
 #define BUFSIZE 8192
 
-void error(char *msg) {
+void error(char *msg, int sock) {
   perror(msg);
+  close(sock);
   exit(EXIT_FAILURE);
 }
 
@@ -42,18 +43,16 @@ unsigned char ttl=1; //default
 
 int dotalk=0;
 int port=2000;
-if (argc>1) {
+if (argc>1) 
     dotalk = atoi(argv[1]);
-}
-if (argc>2) {
-    port = atoi(argv[2]);
-}
 
+if (argc>2)
+    port = atoi(argv[2]);
 
 // create socket
 int s = socket(AF_INET6, SOCK_DGRAM, 0);
  if (s < 0)
-    perror("ERROR opening socket");
+    error("ERROR opening socket",s);
 // instant restart capability
   int optval = 1;
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
@@ -65,11 +64,9 @@ int s = socket(AF_INET6, SOCK_DGRAM, 0);
 
         memset(&ifr, 0, sizeof(ifr));
         snprintf(ifr.ifr_name, sizeof(ifr.ifr_name),"%s", ifname);
-        if ((setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0){
-            perror("interface selection error");
-            close(s);
-            return(EXIT_FAILURE);
-        }
+        if ((setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0)
+            error("interface selection error",s);
+
 
     }
 // server IP
@@ -80,9 +77,8 @@ int s = socket(AF_INET6, SOCK_DGRAM, 0);
 // TTL
   setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
 // bind socket to port
-  if (bind(s, (struct sockaddr *) &serveraddr,
-	   sizeof(serveraddr)) < 0)
-    perror("ERROR on binding");
+  if (bind(s, (struct sockaddr *) &serveraddr,  sizeof(serveraddr)) < 0)
+    error("ERROR on binding",s);
 
 // do work
     serv(s,dotalk);
@@ -112,7 +108,8 @@ void serv(int s,int dotalk){
     {
         memset(buf, 0,BUFSIZE);
         ret = recvfrom(s, buf, BUFSIZE, 0, (struct sockaddr *) &cliadd, &clientlen);
-        //if (ret < 0)    error("ERROR in recvfrom");
+        if (ret < 0)    
+            error("ERROR in recvfrom",s);
 
          // gethostbyaddr: determine who sent the datagram
         //hostp = gethostbyaddr((const char *)&cliadd.sin6_addr, 
@@ -134,10 +131,13 @@ void serv(int s,int dotalk){
         ret = sendto(s, &Nel,   sizeof(Nel),   0, (struct sockaddr *) &cliadd, clientlen);
         // then send float32 array
         ret = sendto(s, array, sizeof(array), 0, (struct sockaddr *) &cliadd, clientlen);
+        if (ret < 0)  
+            error("ERROR in sending array sendto",s);
     }
     else{ // echo parrot mode
         ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr *) &cliadd, clientlen);
-        if (ret < 0)  perror("ERROR in sendto");
+        if (ret < 0)  
+            error("ERROR in parrot reply sendto",s);
     }
 
     }

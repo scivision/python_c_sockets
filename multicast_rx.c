@@ -17,29 +17,32 @@ Michael Hirsch
 #include <arpa/inet.h>
 #include <stdio.h>
 
+void error(char *msg, int sock) {
+    perror(msg);
+    close(sock);
+    exit(EXIT_FAILURE);
+}
+
 int main(int argc, char **argv)
 {
 
 // user mode setting
 char mcgroup[39]="ff08::1";
 int mcport=2000;
-if (argc>1) {
+if (argc>1) 
     memcpy(mcgroup,argv[1],15);
-}
-if (argc>2) {
+
+if (argc>2) 
     mcport  = atoi(argv[2]);
-}
+
 
    printf("listening on %s port %d \n",mcgroup,mcport);
    struct sockaddr_in6 group;
-   int sock;
 
    /* set up socket */
-   sock = socket(AF_INET6, SOCK_DGRAM, 0);
-   if (sock < 0) {
-     perror("socket");
-     return(EXIT_FAILURE);
-   }
+   int sock = socket(AF_INET6, SOCK_DGRAM, 0);
+   if (sock < 0) 
+     error("socket open failure",sock);
 // instant restart capability
   int optval = 1;
   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
@@ -57,16 +60,12 @@ if (argc>2) {
       struct ipv6_mreq mreq;
       inet_pton(AF_INET6, mcgroup, &(mreq.ipv6mr_multiaddr));
       mreq.ipv6mr_interface = INADDR_ANY;   // any interface
-      if (setsockopt(sock,IPPROTO_IPV6,IPV6_JOIN_GROUP, &mreq,sizeof(mreq)) < 0) {
-	     perror("setsockopt mreq");
-	     return(EXIT_FAILURE);
-      }
+      if (setsockopt(sock,IPPROTO_IPV6,IPV6_JOIN_GROUP, &mreq,sizeof(mreq)) < 0) 
+	     error("setsockopt mreq",sock);
+      
 
-      if (bind(sock, (struct sockaddr *) &group, sizeof(group)) < 0) {
-         perror("bind");
-	     return(EXIT_FAILURE);
-      }
-
+      if (bind(sock, (struct sockaddr *) &group, sizeof(group)) < 0) 
+         error("bind",sock);
 
      char message[100];
      int cnt;
@@ -78,8 +77,7 @@ if (argc>2) {
  	 cnt = recvfrom(sock, message, sizeof(message), 0,
 			(struct sockaddr *) &group, &addrlen);
 	 if (cnt < 0) {
-	    perror("recvfrom");
-	    exit(1);
+	    error("recvfrom",sock);
 	 } else if (cnt == 0) {
  	    break;
 	 }
