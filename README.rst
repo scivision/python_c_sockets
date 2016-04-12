@@ -32,7 +32,7 @@ Loopback
 --------
 open a terminal::
   
-  ./unicast_tx.out 0
+  ./unicast_tx 0
   
 open second terminal::
 
@@ -46,7 +46,7 @@ This demo sends 8192 byte float32 arrays, by first sending an int telling the le
 
 Open a terminal::
   
-  ./unicast_tx.out 1
+  ./unicast_tx 1
   
 Open another terminal::
 
@@ -62,7 +62,7 @@ so I disabled the unlimited writing so that you didn't write a huge file.
 Python
 ~~~~~~
 
-Run the ``unicast_tx.out 1`` and in the second terminal window run::
+Run the ``unicast_tx 1`` and in the second terminal window run::
 
     ./unicast_rx.py -o test.h5
 
@@ -70,17 +70,17 @@ Run the ``unicast_tx.out 1`` and in the second terminal window run::
 C
 ~
 
-Run the ``unicast_tx.out 1`` and in the second terminal window run::
+Run the ``unicast_tx 1`` and in the second terminal window run::
 
-    ./unicast_rx_h5.out
+    ./unicast_rx
 
 
 Multicast
 =========
 open a terminal::
 
-    ./multicast_tx.out
+    ./multicast_tx
 
 open a second terminal::
 
-    ./multicast_rx.out
+    ./multicast_rx
