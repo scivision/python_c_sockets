@@ -14,7 +14,10 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 
-#define BUFSIZE 8192
+static const int BUFSIZE=8192;
+
+
+void error(char *msg, int sock) __attribute__ ((noreturn));
 
 void error(char *msg, int sock) {
     perror(msg);
@@ -24,8 +27,8 @@ void error(char *msg, int sock) {
 
 int main(int argc, char **argv) {
 
-    int ret;
-    int Nel = BUFSIZE/4; // float32
+    long ret;
+    unsigned long Nel = BUFSIZE/4; // float32
     socklen_t serverlen;
     struct sockaddr_in6 serveraddr;
     struct addrinfo *server;
@@ -35,7 +38,8 @@ int main(int argc, char **argv) {
     int port=2000;
 
     char buf[1]="\n";
-    float array[Nel];
+    float * array;
+    array = malloc(Nel*sizeof(float));
 
     if (argc>1) 
         hostname = argv[1];
@@ -56,7 +60,7 @@ int main(int argc, char **argv) {
 
     
     bool first = true;
-    float last;
+    float last=0.;
     // loop
     while (true)
     {
@@ -96,6 +100,5 @@ int main(int argc, char **argv) {
     }
 
 
-    return (EXIT_SUCCESS);
 }
 

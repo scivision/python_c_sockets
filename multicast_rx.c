@@ -17,6 +17,8 @@ Michael Hirsch
 #include <arpa/inet.h>
 #include <stdio.h>
 
+void error(char *msg, int sock) __attribute__ ((noreturn));
+
 void error(char *msg, int sock) {
     perror(msg);
     close(sock);
@@ -68,7 +70,7 @@ if (argc>2)
          error("bind",sock);
 
      char message[100];
-     int cnt;
+     long cnt;
      unsigned int addrlen=sizeof(group);
      char serverstr[INET6_ADDRSTRLEN];
 

@@ -1,4 +1,5 @@
 // taken from  http://man7.org/linux/man-pages/man3/getifaddrs.3.html
+#define _GNU_SOURCE
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -8,7 +9,7 @@
 #include <unistd.h>
 #include <linux/if_link.h>
 
-int main(int argc, char *argv[])
+int main()
 {
    struct ifaddrs *ifaddr, *ifa;
    int family, s, n;

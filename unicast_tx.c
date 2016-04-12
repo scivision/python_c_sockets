@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <string.h>
 #include <netdb.h>
@@ -24,12 +25,21 @@
 #include <arpa/inet.h>
 #include <linux/if.h>
 
-#define BUFSIZE 8192
+static const int BUFSIZE=8192;
+
+void error(char *, int) __attribute__ ((noreturn));
+void serv(int ,int) __attribute__ ((noreturn));
+void sigint_handler(int);
 
 void error(char *msg, int sock) {
   perror(msg);
   close(sock);
   exit(EXIT_FAILURE);
+}
+
+void sigint_handler(int sig)
+{
+    printf("signal %d: ending unicast server PID %d\n",sig,getpid());
 }
 
 
@@ -89,7 +99,9 @@ return(EXIT_SUCCESS);
 
 
 
-void serv(int s,int dotalk){
+void serv(int s,int dotalk) {
+
+    signal(SIGINT, sigint_handler);
 
     struct sockaddr_in6 cliadd;
     char clistr[INET6_ADDRSTRLEN];
@@ -97,10 +109,14 @@ void serv(int s,int dotalk){
 
     int i;
     int last=0;
-    int ret;
+    long ret;
     int Nel=BUFSIZE/4; // float is 4 bytes
-    char buf[BUFSIZE];
-    float array[BUFSIZE];
+    
+    char * buf; 
+    buf = malloc(BUFSIZE*sizeof(char));
+
+    float * array;
+    array = malloc(BUFSIZE*sizeof(float));
     unsigned int clientlen = sizeof(cliadd);
 
     // loop: echo UDP packets back to client
@@ -141,6 +157,7 @@ void serv(int s,int dotalk){
     }
 
     }
+
 
 }
 

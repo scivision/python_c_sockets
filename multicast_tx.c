@@ -29,6 +29,9 @@ ref: http://tldp.org/HOWTO/Multicast-HOWTO-6.html
 #include <stdio.h>
 #include <time.h>
 
+void error(char *msg, int sock) __attribute__ ((noreturn));
+int main(int argc, char **argv);
+
 void error(char *msg, int sock) {
     perror(msg);
     close(sock);
@@ -94,9 +97,10 @@ if (argc>2) {
 bind(sock, (struct sockaddr *)&group, sizeof(group));
 
 // main loop
-     int cnt;
+     long cnt;
      char message[100];
-     int addrlen=sizeof(group);
+     unsigned int addrlen=sizeof(group);
+
       while (true) {
 	 time_t t = time(0);
 	 sprintf(message, "%-24.24s", ctime(&t));

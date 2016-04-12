@@ -14,12 +14,13 @@ Prereqs
 =======
 ::
 
-    sudo apt-get install gcc make libhdf5-dev
+    sudo apt-get install gcc cmake libhdf5-dev
 
 Compile
 =======
 ::
-
+  cd bin
+  cmake ..
   make
 
   
