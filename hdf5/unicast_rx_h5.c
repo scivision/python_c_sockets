@@ -16,10 +16,10 @@
 // HDF5
 #include "hdf5.h"
 #define FILENAME "testc.h5"
-const int RANK 1
+static const int RANK=1;
 
-const int BUFSIZE 8192
-const int Nloop 100000 // temp, get the hang of it, then we'll go unlimited writing
+static const int BUFSIZE=8192;
+static const int Nloop=100000; // temp, get the hang of it, then we'll go unlimited writing
 
 void error(char *msg, int sock) {
     perror(msg);
