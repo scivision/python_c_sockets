@@ -19,6 +19,7 @@ Prereqs
 Compile
 =======
 ::
+
   cd bin
   cmake ..
   make
