@@ -15,8 +15,6 @@ Michael Hirsch
 ref: http://tldp.org/HOWTO/Multicast-HOWTO-6.html
 */
 
-
-#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>

@@ -6,8 +6,6 @@
  cc unicast_tx.c
  ./unicast_tx talk port
 
- ./unicast_tx 1 // will return float array of sequential values length BUFSIZE/4, upon receiving a newline
- ./unicast_tx 0 // will echo back your text
  nc -u ::1 2000    // assuming you selected the server to be on port 2000 below
 */
 
@@ -15,7 +13,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <stdbool.h>
 #include <string.h>
 #include <netdb.h>
@@ -28,8 +25,7 @@
 static const int BUFSIZE=8192;
 
 void error(char *, int) __attribute__ ((noreturn));
-void serv(int ,int) __attribute__ ((noreturn));
-void sigint_handler(int);
+void serv(int) __attribute__ ((noreturn));
 
 void error(char *msg, int sock) {
   perror(msg);
@@ -37,10 +33,6 @@ void error(char *msg, int sock) {
   exit(EXIT_FAILURE);
 }
 
-void sigint_handler(int sig)
-{
-    printf("signal %d: ending unicast server PID %d\n",sig,getpid());
-}
 
 
 int main(int argc, char **argv)
@@ -51,13 +43,10 @@ struct sockaddr_in6 serveraddr;
 // user mode setting
 unsigned char ttl=1; //default
 
-int dotalk=0;
 int port=2000;
-if (argc>1) 
-    dotalk = atoi(argv[1]);
 
-if (argc>2)
-    port = atoi(argv[2]);
+if (argc>1)
+    port = atoi(argv[1]);
 
 // create socket
 int s = socket(AF_INET6, SOCK_DGRAM, 0);
@@ -91,7 +80,7 @@ int s = socket(AF_INET6, SOCK_DGRAM, 0);
     error("ERROR on binding",s);
 
 // do work
-    serv(s,dotalk);
+    serv(s);
 
 return(EXIT_SUCCESS);
 
@@ -99,9 +88,7 @@ return(EXIT_SUCCESS);
 
 
 
-void serv(int s,int dotalk) {
-
-    signal(SIGINT, sigint_handler);
+void serv(int s) {
 
     struct sockaddr_in6 cliadd;
     char clistr[INET6_ADDRSTRLEN];
@@ -109,7 +96,6 @@ void serv(int s,int dotalk) {
 
     int i;
     int last=0;
-    long ret;
     int Nel=BUFSIZE/4; // float is 4 bytes
     
     char * buf; 
@@ -123,22 +109,14 @@ void serv(int s,int dotalk) {
     while (true)
     {
         memset(buf, 0,BUFSIZE);
-        ret = recvfrom(s, buf, BUFSIZE, 0, (struct sockaddr *) &cliadd, &clientlen);
+        ssize_t ret = recvfrom(s, buf, BUFSIZE, 0, (struct sockaddr *) &cliadd, &clientlen);
         if (ret < 0)    
             error("ERROR in recvfrom",s);
 
-         // gethostbyaddr: determine who sent the datagram
-        //hostp = gethostbyaddr((const char *)&cliadd.sin6_addr, 
-        //                         sizeof(cliadd.sin6_addr), AF_INET6);
+        inet_ntop(AF_INET6,&(cliadd.sin6_addr), clistr, INET6_ADDRSTRLEN);
 
-        //if (hostp == NULL)   error("ERROR on gethostbyaddr");
-         inet_ntop(AF_INET6,&(cliadd.sin6_addr), clistr, INET6_ADDRSTRLEN);
+        //printf("server received %lu/%zd bytes: %s\n", strlen(buf), ret, buf);
 
-        //if (clistr == NULL)  error("ERROR on inet_ntop\n");
-        //printf("server received datagram from %s (%s)\n", hostp->h_name, clistr);
-        //printf("server received %d/%d bytes: %s\n", strlen(buf), ret, buf);
-
-    if (dotalk==1){ // blast float32 array mode
     	// generate dummy data stream of float32
         for (i=0; i<Nel; ++i)  array[i] = last+i;
         last+=Nel;
@@ -149,17 +127,11 @@ void serv(int s,int dotalk) {
         ret = sendto(s, array, sizeof(array), 0, (struct sockaddr *) &cliadd, clientlen);
         if (ret < 0)  
             error("ERROR in sending array sendto",s);
-    }
-    else{ // echo parrot mode
-        ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr *) &cliadd, clientlen);
-        if (ret < 0)  
-            error("ERROR in parrot reply sendto",s);
-    }
 
-    }
+    } //while
 
 
-}
+} //main
 
 
 

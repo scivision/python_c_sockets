@@ -3,7 +3,6 @@
  based on https://www.cs.cmu.edu/afs/cs/academic/class/15213-f99/www/class26/udpserver.c
 */
 
-#define _POSIX_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,9 +12,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <math.h>
 
 static const int BUFSIZE=8192;
-
 
 void error(char *msg, int sock) __attribute__ ((noreturn));
 
@@ -27,14 +26,13 @@ void error(char *msg, int sock) {
 
 int main(int argc, char **argv) {
 
-    long ret;
+    ssize_t ret;
     unsigned long Nel = BUFSIZE/4; // float32
     socklen_t serverlen;
     struct sockaddr_in6 serveraddr;
     struct addrinfo *server;
 
-    char *hostname;
-    hostname="::1";
+    char *hostname = "::1";
     int port=2000;
 
     char buf[1]="\n";
@@ -88,10 +86,10 @@ int main(int argc, char **argv) {
         printf("Initial last: %f\n",last);
     }
 
-    if(last!=array[0]-1){
+    if (fabsf(array[0]-(float)1.)<0.99){
         printf("last: %f data: %f\n",last,array[0]-1);
         printf("may be wrapping in float32");
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } 
 
 

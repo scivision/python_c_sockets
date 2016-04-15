@@ -3,7 +3,6 @@
  based on https://www.cs.cmu.edu/afs/cs/academic/class/15213-f99/www/class26/udpserver.c
 */
 
-#define _POSIX_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,13 +12,17 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <math.h>
+
 // HDF5
 #include "hdf5.h"
 #define FILENAME "testc.h5"
 static const int RANK=1;
 
 static const int BUFSIZE=8192;
-static const int Nloop=100000; // temp, get the hang of it, then we'll go unlimited writing
+static const int Nloop=1000; // to not fill your hard drive!
+
+void error(char *msg, int sock) __attribute__ ((noreturn));
 
 void error(char *msg, int sock) {
     perror(msg);
@@ -49,7 +52,7 @@ int main(int argc, char **argv) {
     status = H5Pset_chunk (prop, RANK, chunk_dims);
     if (status<0){
         H5Eprint1(stderr);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     // Create a new dataset within the file using chunk creation properties.
     // datatypes: https://www.hdfgroup.org/HDF5/doc/RM/PredefDTypes.html
@@ -59,20 +62,20 @@ int main(int argc, char **argv) {
     printf("writing data to %s\n",FILENAME);
 //------------------------------------------------------------------------------    
 
-    int ret;
-    int Nel = BUFSIZE/4; // float32
+    ssize_t ret;
+    size_t Nel = BUFSIZE/4; // float32->4 bytes
     socklen_t serverlen;
     struct sockaddr_in6 serveraddr;
     struct addrinfo *server;
 
-    char *hostname;
-    hostname="::1";
+    char *hostname = "::1";
     int port=2000;
 
     
-    int i=0;
+    unsigned long i=0;
     char buf[1]="\n";
-    float array[Nel];
+    float * array;
+    array = malloc(Nel*sizeof(float));
 
     if (argc>1) 
         hostname = argv[1];
@@ -93,7 +96,7 @@ int main(int argc, char **argv) {
 
     
     bool first = true;
-    float last;
+    float last=0.;
     // loop
     while (true)
     {
@@ -121,10 +124,10 @@ int main(int argc, char **argv) {
         printf("Initial last: %f\n",last);
     }
 
-    if(last!=array[0]-1){
+    if (fabsf(array[0]-(float)1.)<0.99){
         printf("last: %f data: %f\n",last,array[0]-1);
         printf("may be wrapping in float32");
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } 
 
 
@@ -140,14 +143,14 @@ int main(int argc, char **argv) {
     status = H5Sselect_hyperslab (dataspace_id, H5S_SELECT_SET, offset, NULL, count, NULL);  
     if (status<0){
         H5Eprint1(stderr);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     // Write data to dataset
     status = H5Dwrite (dset, H5T_IEEE_F32LE, memspace_id, dataspace_id, H5P_DEFAULT, array);
     if (status<0){
         H5Eprint1(stderr);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     i++;
@@ -165,6 +168,6 @@ int main(int argc, char **argv) {
 
 
 
-    return (EXIT_SUCCESS);
+    return EXIT_SUCCESS;
 }
 

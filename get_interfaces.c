@@ -1,5 +1,4 @@
 // taken from  http://man7.org/linux/man-pages/man3/getifaddrs.3.html
-#define _GNU_SOURCE
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -49,7 +48,7 @@ int main()
                    NULL, 0, NI_NUMERICHOST);
            if (s != 0) {
                printf("getnameinfo() failed: %s\n", gai_strerror(s));
-               exit(EXIT_FAILURE);
+               return EXIT_FAILURE;
            }
 
            printf("\t\taddress: <%s>\n", host);
@@ -65,5 +64,5 @@ int main()
    }
 
    freeifaddrs(ifaddr);
-   exit(EXIT_SUCCESS);
+   return EXIT_SUCCESS;
 }
