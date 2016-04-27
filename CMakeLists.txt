@@ -7,6 +7,10 @@ foreach(fn ${flist})
     add_executable(${fname} ${fn})
     set_target_properties(${fname} PROPERTIES C_STANDARD 11)
 endforeach()
+#----- linux only ----------
+if(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+    add_executable(get_interfaces linux/get_interfaces.c)
+endif()
 #------------ HDF5  ----------
 # ftp://www.hdfgroup.org/HDF5/current/src/unpacked/release_docs/USING_HDF5_CMake.txt
 find_package(HDF5)
