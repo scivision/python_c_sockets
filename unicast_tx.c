@@ -20,7 +20,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <linux/if.h>
 
 static const int BUFSIZE=8192;
 
@@ -56,18 +55,7 @@ int s = socket(AF_INET6, SOCK_DGRAM, 0);
   int optval = 1;
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
 	     (const void *)&optval , sizeof(int));
-// optional bind to interface
-    struct ifreq ifr;
-    if (argc>3){
-        char ifname[10];
 
-        memset(&ifr, 0, sizeof(ifr));
-        snprintf(ifr.ifr_name, sizeof(ifr.ifr_name),"%s", ifname);
-        if ((setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0)
-            error("interface selection error",s);
-
-
-    }
 // server IP
   memset((char *) &serveraddr, 0, sizeof(serveraddr));
   serveraddr.sin6_family = AF_INET6;
