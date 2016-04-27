@@ -81,13 +81,13 @@ if (argc>2) {
 //    setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &hops,sizeof(hops))
 
 // optional bind to interface
-    struct ifreq ifr;
     if (argc>3){
         char ifname[10];
+        strcpy(ifname,argv[3]);
 
-        memset(&ifr, 0, sizeof(ifr));
-        snprintf(ifr.ifr_name, sizeof(ifr.ifr_name),"%s", ifname);
-        if ((setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr))) < 0)
+        unsigned int ifr = if_nametoindex(ifname);
+
+        if ((setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifr, sizeof(ifr))) < 0)
             error("interface selection error",sock);
 
     }
