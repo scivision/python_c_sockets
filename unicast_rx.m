@@ -5,28 +5,34 @@
 % 1) get number of float32 via int
 % 2) get float32 array
 
-function socksink()
+function unicast_rx()
 HOST='::1'; % '::1' is to ipv6 what 'localhost' is to ipv4
 PORT=2000;
 BUFSIZE=8192;
 Nelbyte = 4; %4 bytes for float32
 
 
-    S = udp(HOST,PORT,'InputBufferSize',BUFSIZE,'DatagramTerminateMode','on'); %8192 byte max read at one time
-    S.timeout=0.1;
+    S = udp(HOST,PORT,'InputBufferSize',BUFSIZE,...
+        'DatagramTerminateMode','on'); %8192 byte max read at one time
+    S.timeout=0.2;
     fopen(S);
+    assert(strcmp(S.Status,'open'),'no connection on socket')
     % Do NOT connect or bind
       first=true;
 
-      for i =1:100000000
+        i=0;
+      while true
         tic
 %% host-> device
         fwrite(S,'\n')
 %% device -> host
-        Nel = fread(S,4,'int32') %int len
-        dat = fread(S,Nel*Nelbyte,'float32');
+  
+        Nel=2048;
+         fread(S,1,'uint32'); 
+        dat = fread(S,Nel,'float32');
 
-        if isempty(dat)
+        if length(dat) ~= Nel
+            disp(length(dat))
             continue
         end
 %% parse result
@@ -38,10 +44,11 @@ Nelbyte = 4; %4 bytes for float32
             rtoc = mean([toc,rtoc]);
         end
 
-        if ~mod(i, 1000), disp(rtoc), end
+        %if ~mod(i, 1000), disp(rtoc), end
 
-        assert(last==dat(1)-1,num2str(last))
+        %(last==dat(1)-1,num2str(last))
         last = dat(end);
+        i = i+1;
       end
 
     fclose(S);

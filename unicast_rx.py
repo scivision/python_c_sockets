@@ -14,9 +14,8 @@ from time import time
 import socket
 try:
     import h5py
-    useh5 = True
 except ImportError:
-    useh5 = False
+    h5py=None
 
 Nupdate = 1000 #update/write every N loops
 BUFSIZE=8192
@@ -29,7 +28,7 @@ def udpunicast(host,port,h5fn=None):
     try:
       first=True
 
-      if useh5 and h5fn:
+      if h5py is not None and h5fn:
           h5 = h5py.File(h5fn,'w',libver='latest')
           h5d = h5.create_dataset('/data',
                             dtype=float32,
@@ -47,12 +46,12 @@ def udpunicast(host,port,h5fn=None):
 #%% host-> device
         S.sendto(b'\n',(host,port,0,0))
 #%% device -> host
-        Nel = unpack('<1i',S.recv(4))[0] #int len
+        Nel = unpack('<1L',S.recv(4))[0] #int len
         Nbyte_dg = Nel*Nelbyte
 
         A = S.recv(Nbyte_dg)
 
-        if not A:
+        if len(A) != Nbyte_dg:
             continue
 #%% parse result
         dat = unpack('<{:d}f'.format(Nel),A)

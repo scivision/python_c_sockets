@@ -20,7 +20,7 @@
 static const int RANK=1;
 
 static const int BUFSIZE=8192;
-static const int Nloop=1000; // to not fill your hard drive!
+static const size_t Nloop=1000; // to not fill your hard drive!
 
 void error(char *msg, int sock) __attribute__ ((noreturn));
 
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     int port=2000;
 
     
-    unsigned long i=0;
+    size_t i=0;
     char buf[1]="\n";
     float * array;
     array = malloc(Nel*sizeof(float));
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    i++;
+    ++i;
 
     if (i==Nloop){
     printf("this concludes this test writing %s\n",FILENAME);
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 
 
 
-
+    free(array);
     return EXIT_SUCCESS;
 }
 

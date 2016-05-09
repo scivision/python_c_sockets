@@ -8,9 +8,8 @@
 
  nc -u ::1 2000    // assuming you selected the server to be on port 2000 below
 */
-
-
 #include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -21,7 +20,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-static const int BUFSIZE=8192;
+static const size_t BUFSIZE=8192;
 
 void error(char *, int) __attribute__ ((noreturn));
 void serv(int) __attribute__ ((noreturn));
@@ -51,6 +50,8 @@ if (argc>1)
 int s = socket(AF_INET6, SOCK_DGRAM, 0);
  if (s < 0)
     error("ERROR opening socket",s);
+
+printf("Using socket on port %d \n",port);
 // instant restart capability
   int optval = 1;
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
@@ -70,7 +71,7 @@ int s = socket(AF_INET6, SOCK_DGRAM, 0);
 // do work
     serv(s);
 
-return(EXIT_SUCCESS);
+return EXIT_SUCCESS;
 
 }
 
@@ -80,25 +81,21 @@ void serv(int s) {
 
     struct sockaddr_in6 cliadd;
     char clistr[INET6_ADDRSTRLEN];
-    //struct hostent *hostp;
 
-    int i;
     int last=0;
-    int Nel=BUFSIZE/4; // float is 4 bytes
-    
-    char * buf; 
-    buf = malloc(BUFSIZE*sizeof(char));
+    uint32_t Nel=BUFSIZE/4; // float is 4 bytes
 
-    float * array;
-    array = malloc(BUFSIZE*sizeof(float));
-    unsigned int clientlen = sizeof(cliadd);
+    char* buf = malloc(BUFSIZE*sizeof(char));
+
+    float* array = malloc(Nel*sizeof(float));
+    socklen_t clientlen = sizeof(cliadd);
 
     // loop: echo UDP packets back to client
     while (true)
     {
         memset(buf, 0,BUFSIZE);
         ssize_t ret = recvfrom(s, buf, BUFSIZE, 0, (struct sockaddr *) &cliadd, &clientlen);
-        if (ret < 0)    
+        if (ret < 0)
             error("ERROR in recvfrom",s);
 
         inet_ntop(AF_INET6,&(cliadd.sin6_addr), clistr, INET6_ADDRSTRLEN);
@@ -106,19 +103,20 @@ void serv(int s) {
         //printf("server received %lu/%zd bytes: %s\n", strlen(buf), ret, buf);
 
     	// generate dummy data stream of float32
-        for (i=0; i<Nel; ++i)  array[i] = last+i;
+        for (size_t i=0; i<Nel; ++i)  array[i] = last+i;
         last+=Nel;
-
+        printf("%d \n",Nel);
         //send length of float array first
-        ret = sendto(s, &Nel,   sizeof(Nel),   0, (struct sockaddr *) &cliadd, clientlen);
+        ret = sendto(s, &Nel, sizeof(Nel), 0, (struct sockaddr *) &cliadd, clientlen);
         // then send float32 array
-        ret = sendto(s, array, sizeof(array), 0, (struct sockaddr *) &cliadd, clientlen);
-        if (ret < 0)  
+        ret = sendto(s, array, Nel*sizeof(float), 0, (struct sockaddr *) &cliadd, clientlen);
+        if (ret < 0)
             error("ERROR in sending array sendto",s);
 
     } //while
 
-
+free(buf);
+free(array);
 } //main
 
 

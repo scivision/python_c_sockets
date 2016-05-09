@@ -27,7 +27,7 @@ void error(char *msg, int sock) {
 int main(int argc, char **argv) {
 
     ssize_t ret;
-    unsigned long Nel = BUFSIZE/4; // float32
+    uint32_t Nel = BUFSIZE/4; // float32
     socklen_t serverlen;
     struct sockaddr_in6 serveraddr;
     struct addrinfo *server;
@@ -98,5 +98,7 @@ int main(int argc, char **argv) {
     }
 
 
+free(array);
+return EXIT_SUCCESS;
 }
 
