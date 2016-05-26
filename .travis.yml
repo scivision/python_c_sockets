@@ -1,8 +1,5 @@
 language: c
 
-sudo: true
-dist: trusty
-
 notifications:
   email: false
 
@@ -12,6 +9,8 @@ git:
 matrix:
   include:
     - os: linux
+      sudo: true
+      dist: trusty
       compiler: gcc
       addons:
         apt:
@@ -20,6 +19,7 @@ matrix:
       env: COMP=gcc-5
 
     - os: osx
+      osx_image: xcode7.3 # or whatever the latest is
       compiler: clang
       env: COMP=clang
 
