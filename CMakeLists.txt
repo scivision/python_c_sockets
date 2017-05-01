@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.12)
 project(sockets C)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
 add_compile_options(-mtune=native -Wall -Wextra -Wpedantic -fexceptions)
 

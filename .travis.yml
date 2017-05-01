@@ -23,5 +23,5 @@ matrix:
 script: 
     - cd bin
     - CC=$COMP cmake ..
-    - make VERBOSE=1
+    - make
 
