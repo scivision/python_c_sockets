@@ -1,6 +1,7 @@
 
 .. image:: https://travis-ci.org/scivision/python_c_sockets.svg?branch=master
     :target: https://travis-ci.org/scivision/python_c_sockets
+
 =================
 python_c_sockets
 =================
@@ -17,7 +18,7 @@ Prereqs
 =======
 ::
 
-    sudo apt-get install gcc cmake libhdf5-dev
+    apt install gcc cmake libhdf5-dev
 
 Compile
 =======
