@@ -1,4 +1,9 @@
 language: c
+fast_finish: true
+
+os:
+  - linux
+  - osx
 
 notifications:
   email: false
@@ -6,22 +11,24 @@ notifications:
 git:
   depth: 3
 
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['gcc-5']
-      env: COMP=gcc-5
+dist: trusty
+group: edge
 
-    - os: osx
-      osx_image: xcode
-      env: COMP=clang
+#addons:
+#apt:
+#  sources: ['ubuntu-toolchain-r-test']
+#  packages: ['gcc-5']
+#env: CC=gcc-5
+
+
+before_install:
+#  - if [[ $TRAVIS_OS_NAME == osx ]]; then
+#      brew update;
+#      brew install gcc;
+#    fi
 
 script: 
     - cd bin
-    - CC=$COMP cmake ..
+    - cmake ..
     - make
 
