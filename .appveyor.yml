@@ -5,14 +5,28 @@ image:
 stack: python 3
 
 environment:
+  MINGW_DIR: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin
   PY_DIR: C:\Python36-x64
 
 clone_depth: 3
 
 before_build:
-- cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;%PATH%
+- cmd: set PATH=%MINGW_DIR%;%PY_DIR%;%PY_DIR%\Scripts;%PATH%
+# fix CMake sh.exe issue, by removing Git path.
+- cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+- cmd: set FC=%MINGW_DIR%\gfortran 
+- cmd: set CXX=%MINGW_DIR%\g++ 
+- cmd: set CC=%MINGW_DIR%\gcc
+- cmd: mklink bin\make.exe %MINGW_DIR%\mingw32-make.exe
 
-build_script: pip install -e .[tests]
+build_script:
+- pip install -e .[tests]
+
+- cd bin
+- cmd: cmake -G "MinGW Makefiles" ..
+- sh: cmake ..
+- cmake --build .
   
-after_build: pytest -sv
+after_build:
+- ctest -V
 
