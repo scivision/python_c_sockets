@@ -108,7 +108,7 @@ def udpunicast(host: str, port: int, h5fn: Path=None,
 
 
 def updatemsg(i: int, h5, h5d,
-              Nupdate: int, bufsize: int, Nelbyte: int) -> h5py.Dataset:
+              Nupdate: int, bufsize: int, Nelbyte: int):
     if h5 is not None:
         h5.flush()  # NOTE: every N loops to improve performance
         try:
