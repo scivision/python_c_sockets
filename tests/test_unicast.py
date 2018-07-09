@@ -2,9 +2,11 @@
 import pytest
 from pathlib import Path
 import subprocess
+import os
 import python_c_sockets as pcs
 
 R = Path(__file__).resolve().parents[1]
+CI = bool(os.environ['CI']) if 'CI' in os.environ else False
 
 
 @pytest.fixture()
@@ -15,6 +17,7 @@ def sender():
 
 
 @pytest.mark.usefixtures("sender")
+@pytest.mark.skipif(CI, reason="Many CI's don't have audio hardware")
 def test_listener():
     port = 2000
     addr = '::1'
