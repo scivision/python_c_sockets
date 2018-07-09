@@ -3,7 +3,7 @@
 
 # Python C sockets
 
-Platform-independent (BSD, Linux, Mac, Windows) demo of IPv6 UDP datagram on C and Python limited by interface speed (approaching 1Gbps on my laptop) i.e. relatively high performance code.
+Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux) demo of IPv6 UDP datagram on C and Python limited by interface speed (approaching 1Gbps on my laptop) i.e. relatively high performance code.
 
 The server (C-code) goes on the device, the Python code runs on the laptop.
 
@@ -91,7 +91,8 @@ In general IPv6 should be used instead.
    ```sh
    ./broadcast_ipv4.py
    ```
-2. open a second terminal:
-   ```sh
-   
-   ```
+
+
+## Notes
+
+* Windows native: might consider Winsock library and `#ifdef`

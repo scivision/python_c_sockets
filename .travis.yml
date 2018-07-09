@@ -1,5 +1,6 @@
 # Note as of July 2018, no IPv6 on sudo:required
 language: c
+sudo: false
 #sudo: required
 #dist: xenial
 group: travis_latest
