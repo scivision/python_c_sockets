@@ -32,6 +32,8 @@ before_install:
     - source activate test
 
 install:
+  - pip install -e .[tests]
+  
   - cd bin
   - cmake ..
   - cmake --build .
