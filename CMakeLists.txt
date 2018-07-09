@@ -23,15 +23,6 @@ add_executable(unicast_rx unicast_rx.c)
 
 add_executable(unicast_tx unicast_tx.c)
 
-#-- test
-find_package(PythonInterp)
-#if(PYTHON_VERSION_STRING STRGREATER_EQUAL 3.6)
-if(PYTHONINTERP_FOUND)
-  add_test(NAME Python COMMAND pytest -v
-         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-  set_tests_properties(Python PROPERTIES TIMEOUT 30)
-endif()
-
 #----- linux only ----------
 if(UNIX AND NOT (APPLE OR CYGWIN))
     add_executable(get_interfaces linux/get_interfaces.c)

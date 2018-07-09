@@ -31,7 +31,7 @@ def ipv4bcast_rx(port: int, N: int=NPKT, timeout: float=1.0):
         s.bind(('', port))
 
         for i in range(N):
-            print('package',i)
+            print('package', i)
             m = s.recv(14)
             print(m)
 # %%

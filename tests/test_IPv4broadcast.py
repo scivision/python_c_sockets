@@ -3,16 +3,16 @@ import pytest
 import threading
 import python_c_sockets as pcs
 
-PORT=2000
-N=100
+PORT = 2000
+N = 100
+
 
 @pytest.fixture()
 def ipv4bcast_sender():
     thread = threading.Thread(target=pcs.ipv4bcast_tx,
-                              kwargs={'port':PORT, 'N': N,
+                              kwargs={'port': PORT, 'N': N,
                                       'twait': 0.02, 'verbose': False})
     thread.start()
-
 
 
 @pytest.mark.usefixtures("ipv4bcast_sender")
