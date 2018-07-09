@@ -1,21 +1,20 @@
 language: c
-fast_finish: true
+sudo: required
+dist: xenial
+group: travis_latest
+
+git:
+  depth: 3
+  quiet: true
 
 os:
   - linux
   - osx
 
-notifications:
-  email: false
+install:
+  - cd bin
+  - cmake ..
+  - cmake --build .
 
-git:
-  depth: 3
-
-dist: trusty
-group: edge
-
-script: 
-    - cd bin
-    - cmake ..
-    - make
-
+scripts:
+  - ctest -V
