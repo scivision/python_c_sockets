@@ -25,7 +25,7 @@ def ipv4bcast_tx(port: int, N: int=NPKT, twait: float=0.1, verbose: bool=True):
             time.sleep(twait)
 
 
-def ipv4bcast_rx(port: int, N: int=NPKT, timeout: float=1.0):
+def ipv4bcast_rx(port: int, N: int=NPKT, timeout: float=10.0):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.settimeout(timeout)
         s.bind(('', port))
