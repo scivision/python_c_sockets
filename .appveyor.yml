@@ -29,4 +29,5 @@ build_script:
   
 after_build:
 - ctest -V
+- cd ..
 - pytest -sv
