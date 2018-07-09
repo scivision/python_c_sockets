@@ -21,6 +21,7 @@
 #include <arpa/inet.h>
 
 static const size_t BUFSIZE=8192;
+static const bool VERBOSE=false;
 
 void error(char *, int) __attribute__ ((noreturn));
 void serv(int) __attribute__ ((noreturn));
@@ -105,7 +106,9 @@ void serv(int s) {
     	// generate dummy data stream of float32
         for (size_t i=0; i<Nel; ++i)  array[i] = last+i;
         last+=Nel;
-        printf("%d \n",Nel);
+
+        if (VERBOSE)
+            printf("%d \n",Nel);
         //send length of float array first
         ret = sendto(s, &Nel, sizeof(Nel), 0, (struct sockaddr *) &cliadd, clientlen);
         // then send float32 array

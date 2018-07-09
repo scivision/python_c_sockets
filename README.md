@@ -28,13 +28,13 @@ The data flow rate on localhost ::1 with gigabit network card is 1Gbps.
 
 1. open terminal:
    ```sh
-   ./unicast_tx 0
+   ./unicast_tx
    ```
 2. open another terminal:
    ```sh
    nc -u ::1 2000
    ```
-   
+
 You will see text you type echoed back to you when you press Return key
 
 ### Streaming float array
@@ -44,7 +44,7 @@ telling the length of the upcoming float32 array
 
 1. Open terminal:
    ```sh
-   ./unicast_tx 1
+   ./unicast_tx
    ```
 2. Open another terminal:
    ```sh
@@ -61,19 +61,19 @@ write a huge file.
 
 #### Python
 
-Run the `unicast_tx 1` and in the second terminal window run:
+Run the `unicast_tx` and in the second terminal window run:
 ```sh
 ./unicast_rx.py -o test.h5
 ```
 
 #### C
 
-Run the `unicast_tx 1` and in the second terminal window run:
+Run the `unicast_tx` and in the second terminal window run:
 ```sh
 ./unicast_rx
 ```
 
-## Multicast examples
+## IPv6 Multicast examples
 
 1. open a terminal:
    ```sh
@@ -82,4 +82,16 @@ Run the `unicast_tx 1` and in the second terminal window run:
 2. open a second terminal:
    ```sh
    ./multicast_rx
+   ```
+   
+### IPv4 multicast
+In general IPv6 should be used instead.
+
+1. open a terminal:
+   ```sh
+   ./broadcast_ipv4.py
+   ```
+2. open a second terminal:
+   ```sh
+   
    ```
