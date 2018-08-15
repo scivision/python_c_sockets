@@ -11,7 +11,7 @@ N = 100
 def ipv4bcast_sender():
     thread = threading.Thread(target=pcs.ipv4bcast_tx,
                               kwargs={'port': PORT, 'N': N,
-                                      'twait': 0.02, 'verbose': False})
+                                      'twait': 0.02, 'verbose': True})
     thread.start()
 
 
@@ -21,4 +21,4 @@ def test_listener():
 
 
 if __name__ == '__main__':
-    pytest.main()
+    pytest.main(['-x', __file__])
