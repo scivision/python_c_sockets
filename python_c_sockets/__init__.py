@@ -11,7 +11,7 @@ except ImportError:
 NPKT = 10000
 
 
-def ipv4bcast_tx(port: int, N: int=NPKT, twait: float=0.1, verbose: bool=True):
+def ipv4bcast_tx(port: int, N: int = NPKT, twait: float = 0.1, verbose: bool = True):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.bind(('', 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -25,7 +25,7 @@ def ipv4bcast_tx(port: int, N: int=NPKT, twait: float=0.1, verbose: bool=True):
             time.sleep(twait)
 
 
-def ipv4bcast_rx(port: int, N: int=NPKT, timeout: float=10.0):
+def ipv4bcast_rx(port: int, N: int = NPKT, timeout: float = 10.0):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         s.settimeout(timeout)
         s.bind(('', port))
@@ -37,8 +37,8 @@ def ipv4bcast_rx(port: int, N: int=NPKT, timeout: float=10.0):
 # %%
 
 
-def udpunicast(host: str, port: int, h5fn: Path=None,
-               Nupdate: int=1000, bufsize: int=8192, Nelbyte: int=4, N: int=NPKT):
+def udpunicast(host: str, port: int, h5fn: Path = None,
+               Nupdate: int = 1000, bufsize: int = 8192, Nelbyte: int = 4, N: int = NPKT):
     """
     maxshape parameters:
     limit ~ 100000*BUFSIZE to overfill hardrive with extremely fast demo
