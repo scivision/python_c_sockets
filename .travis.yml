@@ -21,13 +21,13 @@ matrix:
     - flake8
     - mypy . --ignore-missing-imports
     after_success:
-    - pytest --cov --cov-config=setup.cfg
+    - pytest --cov
     - coveralls
 
 install:
 - pip install -e .[tests]
 
-- cd bin
+- cd build
 - cmake ..
 - cmake --build .
 

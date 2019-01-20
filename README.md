@@ -7,7 +7,7 @@ Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux) demo of IPv6 UDP d
 
 The server (C-code) goes on the device, the Python code runs on the laptop.
 
-The data flow rate on localhost ::1 with gigabit network card is 1Gbps.
+The data flow rate on localhost ::1 with gigabit network card is 1 Gbps.
 
 ## Build
 
