@@ -38,7 +38,8 @@ def ipv4bcast_rx(port: int, N: int = NPKT, timeout: float = 10.0):
 
 
 def udpunicast(host: str, port: int, h5fn: Path = None,
-               Nupdate: int = 1000, bufsize: int = 8192, Nelbyte: int = 4, N: int = NPKT):
+               Nupdate: int = 1000, bufsize: int = 8192,
+               Nelbyte: int = 4, N: int = NPKT):
     """
     maxshape parameters:
     limit ~ 100000*BUFSIZE to overfill hardrive with extremely fast demo

@@ -4,9 +4,9 @@
 
  usage:
  cc unicast_tx.c
- ./unicast_tx talk port
+ ./unicast_tx port
 
- nc -u ::1 2000    // assuming you selected the server to be on port 2000 below
+ nc -u ::1 2000    // assuming you selected the server to be on port 2000
 */
 #include <stdio.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@
 #include <arpa/inet.h>
 
 static const size_t BUFSIZE=8192;
-static const bool VERBOSE=false;
+static const bool VERBOSE=true;
 
 void error(char *, int) __attribute__ ((noreturn));
 void serv(int) __attribute__ ((noreturn));
@@ -49,8 +49,10 @@ if (argc>1)
 
 // create socket
 int s = socket(AF_INET6, SOCK_DGRAM, 0);
- if (s < 0)
+if (s < 0)
     error("ERROR opening socket",s);
+if (VERBOSE)
+      printf("opened socket %d \n", s);
 
 printf("Using socket on port %d \n",port);
 // instant restart capability
@@ -68,6 +70,9 @@ printf("Using socket on port %d \n",port);
 // bind socket to port
   if (bind(s, (struct sockaddr *) &serveraddr,  sizeof(serveraddr)) < 0)
     error("ERROR on binding",s);
+
+  if (VERBOSE)
+      printf("socket bound %d \n", s);
 
 // do work
     serv(s);
@@ -91,24 +96,36 @@ void serv(int s) {
     float* array = malloc(Nel*sizeof(float));
     socklen_t clientlen = sizeof(cliadd);
 
+    if (VERBOSE)
+        printf("starting Unicast TX loop, waiting for newline from receiver to send reply. \n");
+
+    bool first=false;
+
     // loop: echo UDP packets back to client
     while (true)
     {
-        memset(buf, 0,BUFSIZE);
+        memset(buf, 0, BUFSIZE);
+       // if (VERBOSE)
+       //     printf("set buffer size %lu \n", BUFSIZE);
         ssize_t ret = recvfrom(s, buf, BUFSIZE, 0, (struct sockaddr *) &cliadd, &clientlen);
         if (ret < 0)
             error("ERROR in recvfrom",s);
+        if(!first){
+            printf("sending now: %lu \n", ret);
+            first=true;
+        }
 
-        inet_ntop(AF_INET6,&(cliadd.sin6_addr), clistr, INET6_ADDRSTRLEN);
+        inet_ntop(AF_INET6, &(cliadd.sin6_addr), clistr, INET6_ADDRSTRLEN);
 
-        //printf("server received %lu/%zd bytes: %s\n", strlen(buf), ret, buf);
+        //if (VERBOSE)
+        //  printf("server received %lu/%zd bytes: %s\n", strlen(buf), ret, buf);
 
     	// generate dummy data stream of float32
         for (size_t i=0; i<Nel; ++i)  array[i] = last+i;
         last+=Nel;
 
-        if (VERBOSE)
-            printf("%d \n",Nel);
+        //if (VERBOSE)
+        //    printf("%d \n",Nel);
         //send length of float array first
         ret = sendto(s, &Nel, sizeof(Nel), 0, (struct sockaddr *) &cliadd, clientlen);
         // then send float32 array
@@ -121,6 +138,4 @@ void serv(int s) {
 free(buf);
 free(array);
 } //main
-
-
 

@@ -1,22 +1,16 @@
 #!/usr/bin/env python
+"""
+this test requires network connection (not just localhost)
+"""
 import pytest
-import threading
 import python_c_sockets as pcs
 
 PORT = 2000
 N = 100
 
 
-@pytest.fixture()
-def ipv4bcast_sender():
-    thread = threading.Thread(target=pcs.ipv4bcast_tx,
-                              kwargs={'port': PORT, 'N': N,
-                                      'twait': 0.02, 'verbose': True})
-    thread.start()
-
-
-@pytest.mark.usefixtures("ipv4bcast_sender")
-def test_listener():
+def test_listener(ipv4bcast_sender):
+    ipv4bcast_sender(PORT, N)
     pcs.ipv4bcast_rx(PORT, N=N)
 
 
