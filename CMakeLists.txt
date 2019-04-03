@@ -2,6 +2,10 @@ cmake_minimum_required (VERSION 3.7)
 project(sockets C)
 enable_testing()
 
+if(WIN32)
+message(FATAL_ERROR "These programs don't have all the extra stuff needed for Windows. Consider Cygwin or WSL.")
+endif()
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
@@ -21,6 +25,8 @@ if(UNIX AND NOT (APPLE OR CYGWIN))
 endif()
 
 #------------ HDF5  ----------
+find_package(PkgConfig QUIET)
+pkg_check_modules(HDF5 HDF5)
 find_package(HDF5 COMPONENTS C)
 if(HDF5_FOUND)
   add_executable(unicast_rx_h5 hdf5/unicast_rx_h5.c)

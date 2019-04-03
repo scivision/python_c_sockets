@@ -31,10 +31,10 @@ int main(int argc, char **argv)
 // user mode setting
 char mcgroup[39]="ff08::1";
 int mcport=2000;
-if (argc>1) 
+if (argc>1)
     memcpy(mcgroup,argv[1],15);
 
-if (argc>2) 
+if (argc>2)
     mcport  = atoi(argv[2]);
 
 
@@ -43,7 +43,7 @@ if (argc>2)
 
    /* set up socket */
    int sock = socket(AF_INET6, SOCK_DGRAM, 0);
-   if (sock < 0) 
+   if (sock < 0)
      error("socket open failure",sock);
 // instant restart capability
   int optval = 1;
@@ -62,11 +62,11 @@ if (argc>2)
       struct ipv6_mreq mreq;
       inet_pton(AF_INET6, mcgroup, &(mreq.ipv6mr_multiaddr));
       mreq.ipv6mr_interface = INADDR_ANY;   // any interface
-      if (setsockopt(sock,IPPROTO_IPV6,IPV6_JOIN_GROUP, &mreq,sizeof(mreq)) < 0) 
+      if (setsockopt(sock,IPPROTO_IPV6,IPV6_JOIN_GROUP, &mreq,sizeof(mreq)) < 0)
 	     error("setsockopt mreq",sock);
-      
 
-      if (bind(sock, (struct sockaddr *) &group, sizeof(group)) < 0) 
+
+      if (bind(sock, (struct sockaddr *) &group, sizeof(group)) < 0)
          error("bind",sock);
 
      char message[100];

@@ -3,11 +3,13 @@
 
 # Python C sockets
 
-Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux) demo of IPv6 UDP datagram on C and Python limited by interface speed (approaching 1Gbps on my laptop) i.e. relatively high performance code.
+Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux) demo of IPv6 UDP datagram on C and Python.
+Maximum speed is only limited by interface speed--approaching 1Gbps on my laptop.
+This is simple yet performant code.
 
 The server (C-code) goes on the device, the Python code runs on the laptop.
 
-The data flow rate on localhost ::1 with gigabit network card is 1 Gbps.
+The data flow rate on localhost `::1` with gigabit network card is 1 Gbps.
 
 ## Build
 
@@ -83,7 +85,7 @@ Run the `unicast_tx` and in the second terminal window run:
    ```sh
    ./multicast_rx
    ```
-   
+
 ### IPv4 multicast
 In general IPv6 should be used instead.
 
@@ -95,4 +97,4 @@ In general IPv6 should be used instead.
 
 ## Notes
 
-* Windows native: might consider Winsock library and `#ifdef`
+* Windows native would require some rewriting for Winsock library and `#ifdef`. These days, it may be better to use WSL or Cygwin instead of native Windows.
