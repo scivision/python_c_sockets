@@ -1,4 +1,6 @@
-project('Sockets and HDF5 with C and Python', 'c', default_options : ['default_library=static', 'c_std=c11'])
+project('Sockets and HDF5 with C and Python', 'c',
+  meson_version : '>=0.50',
+  default_options : ['default_library=static', 'c_std=c11'])
 
 cc = meson.get_compiler('c')
 ccid = cc.get_id()

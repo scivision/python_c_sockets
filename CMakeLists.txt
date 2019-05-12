@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7)
+cmake_minimum_required(VERSION 3.7)
 project(sockets C)
 enable_testing()
 
@@ -26,7 +26,7 @@ endif()
 
 #------------ HDF5  ----------
 find_package(PkgConfig QUIET)
-pkg_check_modules(HDF5 HDF5)
+pkg_check_modules(HDF5 hdf5-serial)
 find_package(HDF5 COMPONENTS C)
 if(HDF5_FOUND)
   add_executable(unicast_rx_h5 hdf5/unicast_rx_h5.c)
@@ -34,4 +34,3 @@ if(HDF5_FOUND)
   target_link_libraries(unicast_rx_h5 ${HDF5_C_LIBRARIES})
   #target_compile_options(unicast_rx_h5 PRIVATE -Wno-reserved-id-macro) #hdf5.h lint
 endif()
-
