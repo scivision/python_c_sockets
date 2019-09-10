@@ -1,11 +1,14 @@
-[![image](https://travis-ci.org/scivision/python_c_sockets.svg?branch=master)](https://travis-ci.org/scivision/python_c_sockets)
-[![Build status](https://ci.appveyor.com/api/projects/status/n53e7oll4d1sj9m2?svg=true)](https://ci.appveyor.com/project/scivision/python-c-sockets)
+[![Actions Status](https://github.com/scivision/python_c_sockets/workflows/ci/badge.svg)](https://github.com/scivision/python_c_sockets/actions)
+
 
 # Python C sockets
 
-Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux) demo of IPv6 UDP datagram on C and Python.
+Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux 2) demo of IPv6 UDP datagram on C and Python.
 Maximum speed is only limited by interface speed--approaching 1Gbps on my laptop.
 This is simple yet performant code.
+Windows users should use
+[WSL 2](https://docs.microsoft.com/en-us/windows/wsl/wsl2-install)
+as WSL 1 doesn't have a fully functional network stack.
 
 The server (C-code) goes on the device, the Python code runs on the laptop.
 
@@ -13,16 +16,27 @@ The data flow rate on localhost `::1` with gigabit network card is 1 Gbps.
 
 ## Build
 
-1. prereqs:
-   ```sh
-   apt install gcc cmake libhdf5-dev
-   ```
-2. Compile
-   ```sh
-   cd bin
-   cmake ..
-   cmake --build .
-   ```
+prereqs:
+
+```sh
+apt install gcc libhdf5-dev
+```
+
+Compile with Meson OR CMake
+```sh
+meson build
+
+meson test -C build
+```
+
+OR
+
+```sh
+cmake -B build
+cmake --build build --parallel
+cd build
+ctest -V
+```
 
 ## Unicast examples
 
@@ -50,7 +64,7 @@ telling the length of the upcoming float32 array
    ```
 2. Open another terminal:
    ```sh
-   ./unicast_rx.py
+   python unicast_rx.py
    ```
 I see ~70 microseconds cycle time on my laptop --> 8192 / 70e-6 * 8
 ~ 936 Mbps
@@ -65,7 +79,7 @@ write a huge file.
 
 Run the `unicast_tx` and in the second terminal window run:
 ```sh
-./unicast_rx.py -o test.h5
+python unicast_rx.py -o test.h5
 ```
 
 #### C

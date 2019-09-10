@@ -28,8 +28,6 @@ if(UNIX AND NOT (APPLE OR CYGWIN))
 endif()
 
 #------------ HDF5  ----------
-find_package(PkgConfig QUIET)
-pkg_check_modules(HDF5 hdf5-serial)
 find_package(HDF5 COMPONENTS C)
 if(HDF5_FOUND)
   add_executable(unicast_rx_h5 hdf5/unicast_rx_h5.c)

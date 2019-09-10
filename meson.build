@@ -1,6 +1,6 @@
 project('Sockets and HDF5 with C and Python', 'c',
   meson_version : '>=0.50',
-  default_options : ['default_library=static', 'c_std=c11'])
+  default_options : ['default_library=static', 'buildtype=release'])
 
 cc = meson.get_compiler('c')
 ccid = cc.get_id()
@@ -16,9 +16,11 @@ executable('multicast_rx', 'multicast_rx.c')
 executable('multicast_tx', 'multicast_tx.c')
 executable('unicast_rx', 'unicast_rx.c')
 executable('unicast_tx', 'unicast_tx.c')
-#----- linux only ----------
-#get_ifc = executable('get_interfaces', 'linux/get_interfaces.c')
-#test('InterfaceNames', get_ifc)
+
+if os == 'linux'
+  get_ifc = executable('get_interfaces', 'linux/get_interfaces.c')
+  test('InterfaceNames', get_ifc, timeout: 10)
+endif
 #------------ HDF5  ----------
 hdf5 = dependency('hdf5', required: false)
 if hdf5.found()

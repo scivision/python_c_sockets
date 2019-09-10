@@ -25,6 +25,3 @@ test_script:
 
 - sh: cd build
 - sh: ctest --output-on-failure
-
-
-

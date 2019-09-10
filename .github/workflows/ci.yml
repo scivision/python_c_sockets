@@ -1,0 +1,70 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.7]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: pip install -e .[lint]
+    - name: Lint
+      run: flake8
+    - name: Type check
+      run: mypy .
+
+  linuxMeson:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install Meson
+      run: python -m pip install meson
+    - name: Install packages
+      run: sudo apt install -yq --no-install-recommends ninja-build
+    - name: Meson configure
+      run: meson setup build
+    - name: Meson test
+      run: meson test -C build -v
+    - name: Install dependencies
+      run: pip install -e .[tests]
+    - name: run Pytest
+      run: pytest -r a -v
+      env:
+        CI: true
+
+  macosCMake:
+    needs: [lint]
+    if: false
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Cmake configure
+      run: cmake -B build
+    - name: Cmake build
+      run: cmake --build build --parallel
+    - name: Cmake test
+      run: ctest -V
+      working-directory: build
+    - name: Install dependencies
+      run: pip install -e .[tests]
+    - name: run Pytest
+      run: pytest -r a -v
+      env:
+        CI: true

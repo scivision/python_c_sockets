@@ -9,7 +9,7 @@ It does 2 UDP reads per cycle:
 
 Example:
 1) ./unicast_tx   (compiled from unicast_tx.c)
-2) ./unicast_rx.py
+2) python unicast_rx.py
 3) iftop -i lo   (watch traffic, approaching 1 Gb/sec)
 """
 from argparse import ArgumentParser

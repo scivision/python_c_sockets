@@ -17,4 +17,4 @@ def test_listener():
 
 
 if __name__ == '__main__':
-    pytest.main(['-x', __file__])
+    pytest.main(['-v', __file__])

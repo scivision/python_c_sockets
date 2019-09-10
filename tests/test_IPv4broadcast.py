@@ -15,4 +15,4 @@ def test_listener(ipv4bcast_sender):
 
 
 if __name__ == '__main__':
-    pytest.main(['-x', __file__])
+    pytest.main(['-v', __file__])
