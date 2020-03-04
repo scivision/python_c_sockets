@@ -1,4 +1,4 @@
 
 if(CMAKE_C_COMPILER_ID STREQUAL GNU)
-  add_compile_options(-mtune=native -Wall -Wextra -Wpedantic -fexceptions)
+  add_compile_options(-mtune=native -Wall -Wextra)
 endif()

@@ -1,15 +1,12 @@
 project('Sockets and HDF5 with C and Python', 'c',
   meson_version : '>=0.50',
-  default_options : ['default_library=static', 'buildtype=release'])
+  default_options : ['default_library=static', 'buildtype=release', 'warning_level=3'])
 
 cc = meson.get_compiler('c')
-ccid = cc.get_id()
 os = build_machine.system()
 
 if os == 'windows'
   error('Try Cygwin or WSL, native Windows requires different libraries')
-elif ccid == 'gcc'
-  add_global_arguments('-Wextra', '-Wpedantic', language : 'c')
 endif
 
 executable('multicast_rx', 'multicast_rx.c')

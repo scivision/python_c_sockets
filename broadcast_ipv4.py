@@ -6,10 +6,4 @@ Only possible on IPv4, not recommended for actual use.
 """
 import python_c_sockets as pcs
 
-
-def main():
-    pcs.ipv4bcast(port=2000)
-
-
-if __name__ == '__main__':
-    main()
+pcs.ipv4bcast_tx(port=2000)
