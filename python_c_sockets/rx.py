@@ -23,6 +23,29 @@ def ipv4bcast_rx(port: int, N: int = NPKT, timeout: float = 10.0):
             print(m)
 
 
+def udp_simple_rx(
+    host: str, port: int, timeout: float = 10.0,
+):
+
+    M = 1000000
+    L = 1024
+
+    with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s:
+        s.settimeout(timeout)
+        s.bind((host, port))
+        tic = time.monotonic()
+        i = 1
+        while True:
+            m = s.recv(L)  # noqa: F841
+            # print(m, "\r", end="")
+
+            i += 1
+            if i % M == 0:
+                bw = M * L / (time.monotonic() - tic) / 1e6
+                print(f"{bw:.3f} Mbytes/sec\r", end="")
+                tic = time.monotonic()
+
+
 def udpunicast(
     host: str,
     port: int,
@@ -63,13 +86,17 @@ def udpunicast(
             # host (other program) is programmed to send payload for any input--including simply '\n'
             S.sendto(b"\n", (host, port, 0, 0))
             # %% device -> host
+            print("recieving")
             Nel = struct.unpack("<1L", S.recv(4))[0]  # int len
+            print(Nel)
             Nbyte_dg = Nel * Nelbyte
 
             A = S.recv(Nbyte_dg)
 
             if len(A) != Nbyte_dg:
+                print("unicast_rx: could not determine length")
                 continue
+            print(len(A))
             # %% parse result
             dat = struct.unpack(f"<{Nel:d}f", A)
             if first:  # to avoid having to restart C code each time
