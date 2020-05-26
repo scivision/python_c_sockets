@@ -26,7 +26,6 @@ jobs:
         flake8
         mypy .
     - run: pytest
-      working-directory: build
 
   macos:
     if: false
