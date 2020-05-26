@@ -9,7 +9,7 @@ try:
 except ImportError:
     h5py = None
 
-NPKT = 10000
+from . import NPKT
 
 
 def udpunicast(

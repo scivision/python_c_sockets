@@ -12,6 +12,8 @@ exe = shutil.which("unicast_tx", path=str(R / "build"))
 
 @pytest.fixture
 def unicast_sender():
+    if exe is None:
+        pytest.skip("could not find unicast_tx")
     proc = subprocess.Popen([exe])
     yield proc
     proc.terminate()
