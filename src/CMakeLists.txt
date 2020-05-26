@@ -1,12 +1,18 @@
 add_executable(multicast_rx multicast_rx.c)
 target_compile_features(multicast_rx PRIVATE c_std_11)
+target_link_libraries (multicast_rx ${WINSOCK_LIBRARIES})
+
 add_executable(multicast_tx multicast_tx.c)
 target_compile_features(multicast_tx PRIVATE c_std_11)
+target_link_libraries (multicast_tx ${WINSOCK_LIBRARIES})
 
 add_executable(unicast_rx unicast_rx.c)
 target_compile_features(unicast_rx PRIVATE c_std_11)
+target_link_libraries (unicast_rx ${WINSOCK_LIBRARIES})
+
 add_executable(unicast_tx unicast_tx.c)
 target_compile_features(unicast_tx PRIVATE c_std_11)
+target_link_libraries (unicast_tx ${WINSOCK_LIBRARIES})
 
 #----- linux only ----------
 if(UNIX AND NOT (APPLE OR CYGWIN))
@@ -26,6 +32,6 @@ int main(void){printf(H5_VERS_MAJOR); return 0;}" HDF5_OK)
 if(HDF5_OK)
   add_executable(unicast_rx_h5 hdf5/unicast_rx_h5.c)
   target_include_directories(unicast_rx_h5 PRIVATE ${HDF5_INCLUDE_DIRS})
-  target_link_libraries(unicast_rx_h5 ${HDF5_C_LIBRARIES})
+  target_link_libraries(unicast_rx_h5 ${HDF5_C_LIBRARIES} ${WINSOCK_LIBRARIES})
   #target_compile_options(unicast_rx_h5 PRIVATE -Wno-reserved-id-macro) #hdf5.h lint
 endif()

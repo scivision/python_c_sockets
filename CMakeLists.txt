@@ -6,12 +6,15 @@ project(sockets
 LANGUAGES C)
 enable_testing()
 
-if(WIN32)
-message(FATAL_ERROR "These programs don't have all the extra stuff needed for Windows. Consider Cygwin or WSL.")
-endif()
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 include(cmake/compilers.cmake)
+
+set(WINSOCK_LIBRARIES)
+if(WIN32)
+set(WINSOCK_LIBRARIES wsock32 ws2_32 Iphlpapi)
+endif()
 
 add_subdirectory(src)
