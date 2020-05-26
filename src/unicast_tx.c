@@ -120,7 +120,7 @@ void serv(int s) {
         //if (VERBOSE)
         //  printf("server received %lu/%zd bytes: %s\n", strlen(buf), ret, buf);
 
-    	// generate dummy data stream of float32
+        // generate dummy data stream of float32
         for (size_t i=0; i<Nel; ++i)  array[i] = last+i;
         last+=Nel;
 
@@ -138,4 +138,3 @@ void serv(int s) {
 free(buf);
 free(array);
 } //main
-

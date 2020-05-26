@@ -76,17 +76,15 @@ if (argc>2)
 
 
       while (true) {
- 	 cnt = recvfrom(sock, message, sizeof(message), 0,
+      cnt = recvfrom(sock, message, sizeof(message), 0,
 			(struct sockaddr *) &group, &addrlen);
 	 if (cnt < 0) {
-	    error("recvfrom",sock);
+       error("recvfrom",sock);
 	 } else if (cnt == 0) {
- 	    break;
+       break;
 	 }
 	 printf("%s: message = \"%s\"\n",
              inet_ntop(AF_INET6, &group.sin6_addr, serverstr,
                        INET6_ADDRSTRLEN), message);
         }
 }
-
-
