@@ -8,7 +8,6 @@ CI = bool(os.environ.get("CI"))
 
 @pytest.mark.usefixtures("unicast_sender")
 @pytest.mark.skipif(CI, reason="Many CI's don't have IPv6")
-@pytest.mark.skipif(os.name == "nt", reason="C code not designed for Windows")
 def test_listener():
     port = 2000
     addr = "::1"

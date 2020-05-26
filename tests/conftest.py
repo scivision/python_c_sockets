@@ -2,15 +2,17 @@ import pytest
 import subprocess
 import threading
 from pathlib import Path
-
+import shutil
 import python_c_sockets.tx as pcs
 
 R = Path(__file__).resolve().parents[1]
 
+exe = shutil.which("unicast_tx", path=str(R / "build"))
+
 
 @pytest.fixture
 def unicast_sender():
-    proc = subprocess.Popen(["./unicast_tx"], cwd=R / "build")
+    proc = subprocess.Popen([exe])
     yield proc
     proc.terminate()
 
