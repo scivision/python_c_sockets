@@ -13,7 +13,7 @@ Example:
 3) iftop -i lo   (watch traffic, approaching 1 Gb/sec)
 """
 from argparse import ArgumentParser
-import python_c_sockets.rx as pcs
+import python_c_sockets.hdf as pcs
 
 
 def main():
