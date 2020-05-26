@@ -13,17 +13,17 @@ Example:
 3) iftop -i lo   (watch traffic, approaching 1 Gb/sec)
 """
 from argparse import ArgumentParser
-import python_c_sockets as pcs
+import python_c_sockets.rx as pcs
 
 
 def main():
-    p = ArgumentParser(description='UDP unicast RX demo with optional HDF5 writing')
-    p.add_argument('-o', '--ofn', help='output hdf5 filename to write')
-    p.add_argument('-i', '--host', help='IPv6 address of receiver. ::1 is loopback', default='::1')
-    p.add_argument('-p', '--port', help='port', type=int, default=2000)
+    p = ArgumentParser(description="UDP unicast RX demo with optional HDF5 writing")
+    p.add_argument("-o", "--ofn", help="output hdf5 filename to write")
+    p.add_argument("-i", "--host", help="IPv6 address of receiver. ::1 is loopback", default="::1")
+    p.add_argument("-p", "--port", help="port", type=int, default=2000)
     p = p.parse_args()
 
-    print('unicast server', p.host, 'port', p.port)
+    print("unicast server", p.host, "port", p.port)
 
     pcs.udpunicast(p.host, p.port, p.ofn)
 

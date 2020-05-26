@@ -3,7 +3,7 @@
 this test requires network connection (not just localhost)
 """
 import pytest
-import python_c_sockets as pcs
+import python_c_sockets.rx as pcs
 
 PORT = 2000
 N = 100
@@ -14,5 +14,5 @@ def test_listener(ipv4bcast_sender):
     pcs.ipv4bcast_rx(PORT, N=N)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main([__file__])
