@@ -1,7 +1,6 @@
-[![Actions Status](https://github.com/scivision/python_c_sockets/workflows/ci/badge.svg)](https://github.com/scivision/python_c_sockets/actions)
-
-
 # Python C sockets
+
+![Actions Status](https://github.com/scivision/python_c_sockets/workflows/ci/badge.svg)
 
 Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux 2) demo of IPv6 UDP datagram on C and Python.
 Maximum speed is only limited by interface speed--approaching 1Gbps on my laptop.
@@ -13,6 +12,10 @@ as WSL 1 doesn't have a fully functional network stack.
 The server (C-code) goes on the device, the Python code runs on the laptop.
 
 The data flow rate on localhost `::1` with gigabit network card is 1 Gbps.
+
+NOTE: The multicast programs are for learning purposes only.
+In real networks, multicast use could overwhelm the network with traffic.
+Use contemporary point-point performant methods like websockets instead.
 
 ## Build
 
@@ -107,7 +110,6 @@ In general IPv6 should be used instead.
    ```sh
    ./broadcast_ipv4.py
    ```
-
 
 ## Notes
 

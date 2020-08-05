@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Send UDP broadcast packets
 Only possible on IPv4, not recommended for actual use.

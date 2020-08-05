@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 UDP Unicast send/receive to companion UDP C-code server on localhost or other device
 prints rolling mean of cycle time (typical <80 microseconds on localhost)

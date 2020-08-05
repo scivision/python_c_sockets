@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <linux/if_link.h>
 
-int main()
+int main(void)
 {
    struct ifaddrs *ifaddr, *ifa;
    int family, s, n;
