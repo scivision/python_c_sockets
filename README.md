@@ -17,6 +17,8 @@ NOTE: The multicast programs are for learning purposes only.
 In real networks, multicast use could overwhelm the network with traffic.
 Use contemporary point-point performant methods like websockets instead.
 
+FUTURE: use C++17 [Kissnet](https://github.com/Ybalrid/kissnet)
+
 ## Build
 
 prereqs:

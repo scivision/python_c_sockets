@@ -1,6 +1,13 @@
 name: ci
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "**.py"
+      - "**.c"
+      - "**.cmake"
+      - "**/meson.build"
+      - "**/CMakeLists.txt"
 
 jobs:
 
