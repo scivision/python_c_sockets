@@ -5,9 +5,6 @@
 Multi-platform (BSD, Linux, Mac, Windows Subsystem for Linux 2) demo of IPv6 UDP datagram on C and Python.
 Maximum speed is only limited by interface speed--approaching 1Gbps on my laptop.
 This is simple yet performant code.
-Windows users should use
-[WSL 2](https://docs.microsoft.com/en-us/windows/wsl/wsl2-install)
-as WSL 1 doesn't have a fully functional network stack.
 
 The server (C-code) goes on the device, the Python code runs on the laptop.
 
@@ -17,24 +14,16 @@ NOTE: The multicast programs are for learning purposes only.
 In real networks, multicast use could overwhelm the network with traffic.
 Use contemporary point-point performant methods like websockets instead.
 
-FUTURE: use C++17 [Kissnet](https://github.com/Ybalrid/kissnet)
+## Future
+
+We are beginning to implement these examples via C++17 header-only library [Kissnet](https://github.com/Ybalrid/kissnet).
+This solves the issues of platform independence.
+
+Until the kissnet transition is complete, Windows users should use
+[WSL 2](https://docs.microsoft.com/en-us/windows/wsl/wsl2-install)
+as WSL 1 doesn't have a fully functional network stack.
 
 ## Build
-
-prereqs:
-
-```sh
-apt install gcc libhdf5-dev
-```
-
-Compile with Meson OR CMake
-```sh
-meson build
-
-meson test -C build
-```
-
-OR
 
 ```sh
 cmake -B build
@@ -45,13 +34,21 @@ ctest -V
 
 ## Unicast examples
 
+Kissnet loopback
+
+```sh
+./udp_kiss_rx
+```
+
 ### Loopback
 
 1. open terminal:
+
    ```sh
    ./unicast_tx
    ```
 2. open another terminal:
+
    ```sh
    nc -u ::1 2000
    ```
@@ -112,7 +109,3 @@ In general IPv6 should be used instead.
    ```sh
    ./broadcast_ipv4.py
    ```
-
-## Notes
-
-* Windows native would require some rewriting for Winsock library and `#ifdef`. These days, it may be better to use WSL or Cygwin instead of native Windows.
