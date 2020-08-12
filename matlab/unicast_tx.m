@@ -1,5 +1,4 @@
 % does not require Instrument Control Toolbox
-% for now, uses Matlab (not Octave)
 
 addr = 'localhost';
 port = 2000;
