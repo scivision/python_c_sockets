@@ -49,8 +49,7 @@ unsigned char ttl=1; //default
 
 int port=2000;
 
-if (argc>1)
-  port = atoi(argv[1]);
+if (argc>1) port = atoi(argv[1]);
 
 // create socket
 int s = socket(AF_INET6, SOCK_DGRAM, 0);
