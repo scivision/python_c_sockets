@@ -1,12 +1,11 @@
-function [s,ictb] = setupUDP(port,timeout)
-narginchk(0,2)
-if nargin<2, timeout=1000; end
-if nargin<1, port=[]; end
+function [s,ictb] = setupUDP(opt)
+arguments
+  opt.port = [] % don't specify port if for sending
+  opt.timeout = 1000
+end
 
-validateattributes(timeout, {'numeric'}, {'positive'}, 2)
-
-s = java.net.DatagramSocket(port); % don't specify port if for sending
-s.setSoTimeout(timeout*1000)
+s = java.net.DatagramSocket(opt.port);
+s.setSoTimeout(opt.timeout*1000)
 s.setReuseAddress(true)
 ictb=false;
 

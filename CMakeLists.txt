@@ -4,7 +4,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 project(sockets
 LANGUAGES C CXX)
-enable_testing()
+
+include(CTest)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
