@@ -5,8 +5,8 @@ on:
     paths:
       - "**.py"
       - "**.c"
+      - "**.cpp"
       - "**.cmake"
-      - "**/meson.build"
       - "**/CMakeLists.txt"
 
 jobs:
@@ -32,6 +32,7 @@ jobs:
 
   macos:
     if: false
+    needs: linux
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
