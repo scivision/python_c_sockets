@@ -19,7 +19,9 @@ def ipv4bcast_rx(port: int, N: int = NPKT, timeout: float = 10.0):
 
 
 def udp_simple_rx(
-    host: str, port: int, timeout: float = 10.0,
+    host: str,
+    port: int,
+    timeout: float = 10.0,
 ):
 
     M = 1000000
