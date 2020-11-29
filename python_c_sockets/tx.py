@@ -34,7 +34,4 @@ def unicast_tx(
         while True:
             payload = i.to_bytes(L, "big")
             s.sendto(payload, (host, port, 0, 0))
-
-            # print("unicast payload:", payload, "\r", end="")
-            # time.sleep(twait)
             i += 1

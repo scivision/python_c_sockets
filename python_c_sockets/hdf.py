@@ -20,6 +20,7 @@ def udpunicast(
     bufsize: int = 8192,
     Nelbyte: int = 4,
     N: int = NPKT,
+    timeout: float = 5.0,
 ):
     """
     maxshape parameters:
@@ -28,9 +29,9 @@ def udpunicast(
     None means unlimited size (entire hard drive)
     """
 
-    S = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
     # Do NOT connect or bind
-    try:
+    with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as S:
+        S.settimeout(timeout)
         first = True
 
         if h5py is not None and h5fn:
@@ -83,15 +84,12 @@ def udpunicast(
             # for single precision float, large integer jumps are experienced at large values by IEEE754 definition
             # assert_allclose(diff(dat),1,err_msg=str(dat))
 
-            np.testing.assert_allclose(
-                last, dat[0] - 1, err_msg=f"{last} be mindful of min/max values of your datatype"
-            )
+            assert np.allclose(
+                last, dat[0] - 1
+            ), f"{last} be mindful of min/max values of your datatype"
 
             last = dat[-1]
-    except KeyboardInterrupt:
-        pass
 
-    S.close()
     if h5 is not None:
         h5.close()
 
