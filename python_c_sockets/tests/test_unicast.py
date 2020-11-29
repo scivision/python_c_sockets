@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import pytest
 import os
 import python_c_sockets.rx as pcs
@@ -13,7 +12,3 @@ def test_listener():
     addr = "::1"
 
     pcs.udpunicast(addr, port, N=1000)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])
