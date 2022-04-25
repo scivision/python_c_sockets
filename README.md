@@ -27,9 +27,9 @@ as WSL 1 doesn't have a fully functional network stack.
 
 ```sh
 cmake -B build
-cmake --build build --parallel
-cd build
-ctest -V
+cmake --build build
+
+ctest --test-dir build -V
 ```
 
 ## Unicast examples

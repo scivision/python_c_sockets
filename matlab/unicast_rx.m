@@ -10,12 +10,10 @@ arguments
   N (1,1) {mustBeInteger,mustBePositive} % number of total packets to read
   opt.host (1,1) string = '::1'  % '::1' is to ipv6 what 'localhost' is to ipv4
   opt.port (1,1) {mustBeInteger,mustBePositive} = 2000
-  opt.buffer (1,1) {mustBeInteger,mustBePositive} = 8192
   opt.Nel (1,1) {mustBeInteger,mustBePositive} = 2048 % number of elements per packet
 end
 
-S = udp(opt.host, opt.port, 'InputBufferSize', opt.buffer, ...
-    'DatagramTerminateMode','on'); %8192 byte max read at one time
+S = udpport(opt.host, opt.port, "datagram") ; %8192 byte max read at one time
 S.timeout=0.2;
 fopen(S);
 assert(strcmp(S.Status,'open'),'no connection on socket')
