@@ -10,44 +10,36 @@ arguments
   N (1,1) {mustBeInteger,mustBePositive} % number of total packets to read
   opt.host {mustBeTextScalar} = '::1'  % '::1' is to ipv6 what 'localhost' is to ipv4
   opt.port (1,1) {mustBeInteger,mustBePositive} = 2000
-  opt.Nel (1,1) {mustBeInteger,mustBePositive} = 2048 % number of elements per packet
+  opt.Nel (1,1) {mustBeInteger,mustBePositive} = 2048 % number of elements per packet, 8192 byte max read at one time
 end
 
-S = udpport(opt.host, opt.port, "datagram") ; %8192 byte max read at one time
-S.timeout=0.2;
+S = udpport("datagram", "IPv6", LocalHost=opt.host, LocalPort=opt.port, Timeout=0.2); 
+
 assert(strcmp(S.Status,'open'), 'no connection on socket')
 % Do NOT connect or bind
-first=true;
+
+rtoc = zeros(N-1, 1);
 
 for i = 1:N-1
   tic
   %% host -> device
-  write(S, '\n')
+  write(S, '\n', opt.host, opt.port)
   %% device -> host
 
   read(S, 1, 'uint32');
   dat = read(S, opt.Nel, 'float32');
 
   if length(dat) ~= opt.Nel
-    disp(length(dat))
+    fprintf('unexpected length %d != %d\n', length(dat), opt.Nel)
     continue
   end
-%% parse result
-  if first %to avoid having to restart C code each time
-    first = false;
-    % last = dat(1)-1;
-    rtoc = toc;
-  else
-    rtoc = mean([toc,rtoc]);
-  end
 
-  %if ~mod(i, 1000), disp(rtoc), end
-
-  %(last==dat(1)-1,num2str(last))
-  % last = dat(end);
+  rtoc(i) = toc;
 end
 
 flush(S, "input")
 delete(S)
+
+fprintf('Median packet time %f\n', median(rtoc))
 
 end
