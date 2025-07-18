@@ -58,7 +58,7 @@ int main(int argc, char **argv)
   // Initialize Winsock
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-    fprintf(stderr, "WSAStartup failed\n");
+    fprintf(stderr, "producer: WSAStartup failed\n");
     return EXIT_FAILURE;
   }
 #endif
@@ -69,13 +69,18 @@ int main(int argc, char **argv)
 
 // user mode setting
 char mcgroup[39]="ff08::1";
-int mcport=2000;
 if (argc>1)
   memcpy(mcgroup,argv[1],15);
+
+int mcport=2000;
 if (argc>2)
   mcport  = atoi(argv[2]);
 
-printf("sending on %s port %d \n",mcgroup,mcport);
+int Nloop=8;
+if (argc>3)
+  Nloop = atoi(argv[3]);
+
+printf("producer: sending on %s port %d \n",mcgroup,mcport);
 struct sockaddr_in6 group;
 int sock;
 
@@ -84,24 +89,24 @@ int sock;
 // https://www.man7.org/linux/man-pages/man2/socket.2.html
 sock = socket(AF_INET6, SOCK_DGRAM, 0);
 if (sock < 0)
-  error("socket open fail", sock);
+  error("producer: socket open fail", sock);
 
 // instant restart capability
 int optval = 1;
 // https://www.man7.org/linux/man-pages/man3/setsockopt.3p.html
 // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt
 if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int)) != 0) {
-  error("setsockopt SO_REUSEADDR failed", sock);
+  error("producer: setsockopt SO_REUSEADDR failed", sock);
 }
-printf("socket %d opened\n", sock);
+printf("producer: socket %d opened\n", sock);
 // multicast group config
 memset(&group, 0, sizeof(group));
 group.sin6_family = AF_INET6;
 group.sin6_port = htons(mcport);
 if (inet_pton(AF_INET6, mcgroup, &group.sin6_addr) != 1) {
-  error("invalid multicast address", sock);
+  error("producer: invalid multicast address", sock);
 }
-printf("group address set to %s port %d\n", mcgroup, mcport);
+printf("producer: group address set to %s port %d\n", mcgroup, mcport);
 
 // reference
 // https://docs.oracle.com/cd/E19455-01/806-1017/auto1/index.html
@@ -115,8 +120,8 @@ printf("group address set to %s port %d\n", mcgroup, mcport);
 //    setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, &hops,sizeof(hops))
 
 // optional bind to interface
-if (argc>3){
-  printf("binding to interface %s\n",argv[3]);
+if (argc>4){
+  printf("producer: binding to interface %s\n",argv[3]);
 
   char ifname[10];
   strcpy(ifname,argv[3]);
@@ -128,9 +133,9 @@ if (argc>3){
 #else
   if ((setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifr, sizeof(ifr))) < 0)
 #endif
-    error("setsockopt IPV6_MULTICAST_IF failed", sock);
+    error("producer: setsockopt IPV6_MULTICAST_IF failed", sock);
 
-  printf("bound to interface %s\n", ifname);
+  printf("producer: bound to interface %s\n", ifname);
 
 }
 
@@ -145,30 +150,30 @@ local_addr.sin6_family = AF_INET6;
 local_addr.sin6_addr = in6addr_any;
 local_addr.sin6_port = 0; // Let system choose port
 
-printf("binding to local address for sending\n");
+printf("producer: binding to local address for sending\n");
 if(bind(sock, (struct sockaddr *)&local_addr, sizeof(local_addr)) != 0) {
-  error("bind to local address failed", sock);
+  error("producer: bind to local address failed", sock);
 }
 #else
-printf("binding to group address %s port %d\n", caddr, ntohs(group.sin6_port));
+printf("producer: binding to group address %s port %d\n", caddr, ntohs(group.sin6_port));
 
 if(bind(sock, (struct sockaddr *)&group, sizeof(group)) != 0) {
-  error("bind", sock);
+  error("producer: bind", sock);
 }
 #endif
-printf("bind ok\n");
+printf("producer: bind ok\n");
 
 // main loop
 long cnt;
 char message[100];
 unsigned int addrlen=sizeof(group);
 
-while (true) {
+for (int i = 0; i < Nloop; i++) {
   time_t t = time(0);
   sprintf(message, "%-24.24s", ctime(&t));
   cnt = sendto(sock, message, sizeof(message), 0, (struct sockaddr *) &group, addrlen);
   if (cnt < 0)
-    error("sendto",sock);
+    error("producer: sendto",sock);
 
 #ifdef _MSC_VER
   Sleep(1000);
