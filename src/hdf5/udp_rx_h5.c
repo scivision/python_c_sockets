@@ -27,12 +27,16 @@
 
 // HDF5
 #include "hdf5.h"
-#define FILENAME "testc.h5"
+
+static const char *FILENAME = "testc.h5";
 static const int RANK=1;
 
 static const int BUFSIZE=8192;
 static const size_t Nloop=1000; // to not fill your hard drive!
 
+#if __has_c_attribute(noreturn)
+[[ noreturn ]]
+#endif
 void error(char *msg, int sock) {
 perror(msg);
 close(sock);
@@ -59,7 +63,7 @@ dataspace_id = H5Screate_simple (RANK, dims, maxdims);
 // Modify dataset creation properties, i.e. enable chunking
 prop = H5Pcreate (H5P_DATASET_CREATE);
 status = H5Pset_chunk (prop, RANK, chunk_dims);
-if (status<0){
+if (status < 0){
   H5Eprint1(stderr);
   return EXIT_FAILURE;
 }
@@ -86,9 +90,9 @@ char buf[1]="\n";
 float * array;
 array = malloc(Nel*sizeof(float));
 
-if (argc>1)
+if (argc > 1)
     hostname = argv[1];
-if (argc>2)
+if (argc > 2)
     port = atoi(argv[2]);
 
 /* socket: create the socket */
@@ -115,16 +119,23 @@ ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr*) &serveraddr, serverlen);
 if (ret < 0)
     error("ERROR in sendto",s);
 
-// get the length of data
-ret = recvfrom(s, &Nel, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
+// https://linux.die.net/man/2/recvfrom
+// https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
+// get the length of data -- noting that Windows can only handle char* for buffer instead of void*
+// so we use a char buffer and then memcpy the data into our Nel variable
+char nel_buf[sizeof(Nel)];
+ret = recvfrom(s, nel_buf, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
     error("ERROR in recvfrom",s);
+memcpy(&Nel, nel_buf, sizeof(Nel));
 
 
 // get the data
-ret = recvfrom(s, array, BUFSIZE, 0, (struct sockaddr*) &serveraddr, &serverlen);
+char arr_buf[sizeof(array)];
+ret = recvfrom(s, arr_buf, sizeof(arr_buf), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
     error("ERROR in recvfrom",s);
+memcpy(array, arr_buf, Nel*sizeof(float));
 
 // check the data
 if (first) {

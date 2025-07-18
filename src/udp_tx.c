@@ -33,60 +33,17 @@
 static const size_t BUFSIZE=8192;
 static const bool VERBOSE=true;
 
+#if __has_c_attribute(noreturn)
+[[ noreturn ]]
+#endif
 void error(char *msg, int sock) {
 perror(msg);
 close(sock);
 exit(EXIT_FAILURE);
 }
 
-int main(int argc, char **argv)
-{
-// setup
-void serv();
-struct sockaddr_in6 serveraddr;
-// user mode setting
-unsigned char ttl=1; //default
 
-int port=2000;
-
-if (argc>1) port = atoi(argv[1]);
-
-// create socket
-int s = socket(AF_INET6, SOCK_DGRAM, 0);
-if (s < 0)
-  error("ERROR opening socket",s);
-if (VERBOSE)
-  printf("opened socket %d \n", s);
-
-printf("Using socket on port %d \n",port);
-// instant restart capability
-int optval = 1;
-setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int));
-
-// server IP
-memset((char *) &serveraddr, 0, sizeof(serveraddr));
-serveraddr.sin6_family = AF_INET6;
-serveraddr.sin6_addr = in6addr_any;
-serveraddr.sin6_port = htons((unsigned short)port);
-// TTL
-setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
-// bind socket to port
-if (bind(s, (struct sockaddr *) &serveraddr,  sizeof(serveraddr)) < 0)
-  error("ERROR on binding",s);
-
-if (VERBOSE)
-  printf("socket bound %d \n", s);
-
-// do work
-serv(s);
-
-return EXIT_SUCCESS;
-
-}
-
-
-
-void serv(int s) {
+static void serv(int s) {
 
 struct sockaddr_in6 cliadd;
 char clistr[INET6_ADDRSTRLEN];
@@ -129,14 +86,63 @@ while (true){
   //if (VERBOSE)
   //    printf("%d \n",Nel);
   //send length of float array first
-  ret = sendto(s, &Nel, sizeof(Nel), 0, (struct sockaddr *) &cliadd, clientlen);
+  char nel_buf[sizeof(Nel)];
+  ret = sendto(s, nel_buf, sizeof(nel_buf), 0, (struct sockaddr *) &cliadd, clientlen);
+  if (ret < 0) error("ERROR in sending length sendto",s);
+  memcpy(&Nel, nel_buf, sizeof(Nel));
+
   // then send float32 array
-  ret = sendto(s, array, Nel*sizeof(float), 0, (struct sockaddr *) &cliadd, clientlen);
-  if (ret < 0)
-      error("ERROR in sending array sendto",s);
+  char arr_buf[sizeof(array)];
+  ret = sendto(s, arr_buf, Nel*sizeof(float), 0, (struct sockaddr *) &cliadd, clientlen);
+  if (ret < 0) error("ERROR in sending array sendto",s);
+  memcpy(array, arr_buf, Nel*sizeof(float));
 
 } //while
 
 free(buf);
 free(array);
-} //main
+}
+
+int main(int argc, char **argv)
+{
+// setup
+struct sockaddr_in6 serveraddr;
+// user mode setting
+unsigned char ttl=1; //default
+
+int port=2000;
+
+if (argc>1) port = atoi(argv[1]);
+
+// create socket
+int s = socket(AF_INET6, SOCK_DGRAM, 0);
+if (s < 0)
+  error("ERROR opening socket",s);
+if (VERBOSE)
+  printf("opened socket %d \n", s);
+
+printf("Using socket on port %d \n",port);
+// instant restart capability
+int optval = 1;
+setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int));
+
+// server IP
+memset((char *) &serveraddr, 0, sizeof(serveraddr));
+serveraddr.sin6_family = AF_INET6;
+serveraddr.sin6_addr = in6addr_any;
+serveraddr.sin6_port = htons((unsigned short)port);
+// TTL
+setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
+// bind socket to port
+if (bind(s, (struct sockaddr *) &serveraddr,  sizeof(serveraddr)) < 0)
+  error("ERROR on binding",s);
+
+if (VERBOSE)
+  printf("socket bound %d \n", s);
+
+// do work
+serv(s);
+
+return EXIT_SUCCESS;
+
+}

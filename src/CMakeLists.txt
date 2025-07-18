@@ -14,7 +14,7 @@ target_link_libraries(udp_kiss_rx PRIVATE ${WINSOCK_LIBRARIES})
 add_test(NAME LoopbackUDP COMMAND udp_kiss_rx)
 
 # --- linux only
-if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+if(LINUX)
   add_executable(get_interfaces linux/get_interfaces.c)
   add_test(NAME InterfaceNames COMMAND get_interfaces)
   set_tests_properties(InterfaceNames PROPERTIES TIMEOUT 5)

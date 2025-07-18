@@ -83,15 +83,18 @@ if (ret < 0)
 //printf("sent %x \r",buf);
 
 // get the length of data
-ret = recvfrom(s, &Nel, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
+char nel_buf[sizeof(Nel)];
+ret = recvfrom(s, nel_buf, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
     error("ERROR in recvfrom (data length)",s);
-
+memcpy(&Nel, nel_buf, sizeof(Nel));
 
 // get the data
-ret = recvfrom(s, array, BUFSIZE, 0, (struct sockaddr*) &serveraddr, &serverlen);
+char arr_buf[sizeof(array)];
+ret = recvfrom(s, arr_buf, sizeof(arr_buf), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
     error("ERROR in recvfrom (payload)",s);
+memcpy(array, arr_buf, Nel*sizeof(float));
 
 // check the data
 if (first) {

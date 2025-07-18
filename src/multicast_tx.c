@@ -40,6 +40,9 @@ ref: http://tldp.org/HOWTO/Multicast-HOWTO-6.html
 #endif
 
 
+#if __has_c_attribute(noreturn)
+[[ noreturn ]]
+#endif
 void error(char *msg, int sock) {
     perror(msg);
     close(sock);
@@ -94,8 +97,13 @@ if (argc>3){
 
   unsigned int ifr = if_nametoindex(ifname);
 
+#ifdef _WIN32
+  if ((setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_IF, (char *)&ifr, sizeof(ifr))) < 0)
+    error("interface selection error",sock);
+#else
   if ((setsockopt(sock, IPPROTO_IPV6, IPV6_MULTICAST_IF, &ifr, sizeof(ifr))) < 0)
     error("interface selection error",sock);
+#endif
 
 }
 
