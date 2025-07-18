@@ -95,6 +95,7 @@ if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(in
 }
 printf("socket %d opened\n", sock);
 // multicast group config
+memset(&group, 0, sizeof(group));
 group.sin6_family = AF_INET6;
 group.sin6_port = htons(mcport);
 if (inet_pton(AF_INET6, mcgroup, &group.sin6_addr) != 1) {
@@ -136,12 +137,25 @@ if (argc>3){
 // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-bind
 char caddr[INET6_ADDRSTRLEN];
 inet_ntop(AF_INET6, &group.sin6_addr, caddr, INET6_ADDRSTRLEN);
+#ifdef _WIN32
+// On Windows, bind to any local address for sending
+struct sockaddr_in6 local_addr;
+memset(&local_addr, 0, sizeof(local_addr));
+local_addr.sin6_family = AF_INET6;
+local_addr.sin6_addr = in6addr_any;
+local_addr.sin6_port = 0; // Let system choose port
 
+printf("binding to local address for sending\n");
+if(bind(sock, (struct sockaddr *)&local_addr, sizeof(local_addr)) != 0) {
+  error("bind to local address failed", sock);
+}
+#else
 printf("binding to group address %s port %d\n", caddr, ntohs(group.sin6_port));
 
 if(bind(sock, (struct sockaddr *)&group, sizeof(group)) != 0) {
   error("bind", sock);
 }
+#endif
 printf("bind ok\n");
 
 // main loop
