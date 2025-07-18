@@ -24,7 +24,6 @@ def ipv4bcast_tx(port: int, N: int = NPKT, twait: float = 0.1, verbose: bool = T
 def unicast_tx(
     host: str,
     port: int,
-    twait: float = 0.1,
 ):
 
     L = 1024

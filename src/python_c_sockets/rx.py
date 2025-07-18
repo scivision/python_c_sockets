@@ -4,7 +4,7 @@ import time
 from . import NPKT
 
 
-def ipv4bcast_rx(port: int, N: int = NPKT, timeout: float = 10.0):
+def ipv4bcast_rx(port: int, N: int = NPKT, timeout: float = 15.0):
 
     L = 16
 

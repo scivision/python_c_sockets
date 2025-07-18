@@ -18,7 +18,9 @@ p2 = subprocess.Popen([args.consumer_exe], stdin=subprocess.PIPE, text=True)
 
 try:
     if p1.poll() is not None:
-        raise RuntimeError(f"Producer process {args.producer_exe} exited unexpectedly with code {p1.returncode}")
+        raise RuntimeError(
+            f"Producer process {args.producer_exe} exited unexpectedly with code {p1.returncode}"
+        )
 
     p1.wait(timeout=10)
 

@@ -6,4 +6,4 @@ Only possible on IPv4, not recommended for actual use.
 """
 import python_c_sockets.rx as pcs
 
-pcs.ipv4bcast_rx(port=2000)
+pcs.ipv4bcast_rx(port=2000, timeout=15.0)
