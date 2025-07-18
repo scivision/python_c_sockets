@@ -3,11 +3,12 @@ import time
 import numpy as np
 import struct
 from pathlib import Path
+import sys
 
 try:
     import h5py
 except ImportError:
-    h5py = None
+    pass
 
 from . import NPKT
 
@@ -15,7 +16,7 @@ from . import NPKT
 def udpunicast(
     host: str,
     port: int,
-    h5fn: Path = None,
+    h5fn: Path | None = None,
     Nupdate: int = 1000,
     bufsize: int = 8192,
     Nelbyte: int = 4,
@@ -34,7 +35,7 @@ def udpunicast(
         S.settimeout(timeout)
         first = True
 
-        if h5py is not None and h5fn:
+        if "h5py" in sys.modules and h5fn:
             h5 = h5py.File(h5fn, "w")
             h5d = h5.create_dataset(
                 "/data",
@@ -71,7 +72,7 @@ def udpunicast(
                 last = dat[0] - 1
                 rtoc = time.time() - tic
 
-            rtoc = np.mean((time.time() - tic, rtoc))
+            rtoc = (time.time() - tic + rtoc) / 2
             # %% optional write to disk
             if h5 is not None:
                 h5d[i * Nel : (i + 1) * Nel] = dat
@@ -86,7 +87,7 @@ def udpunicast(
 
             assert np.allclose(
                 last, dat[0] - 1
-            ), f"{last} be mindful of min/max values of your datatype"
+            ), f"{last} be mindful of min/max values of the datatype"
 
             last = dat[-1]
 
@@ -101,7 +102,7 @@ def _updatemsg(i: int, h5, h5d, Nupdate: int, bufsize: int, Nelbyte: int):
             h5d.resize((i + Nupdate) * bufsize / Nelbyte, axis=0)
         except ValueError as e:
             print(
-                "stopping HDF5 writing for this fast demo. in real life you can set maxshape=(None,) for no limit.",
+                "stopping HDF5 writing for this fast demo. One can set maxshape=(None,) for no limit.",
                 e,
             )
             h5.close()

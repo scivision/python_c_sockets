@@ -8,42 +8,39 @@ on:
       - "**.cpp"
       - "**.cmake"
       - "**/CMakeLists.txt"
+  workflow_dispatch:
+
+# avoid wasted runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CTEST_NO_TESTS_ACTION: error
+  CMAKE_BUILD_TYPE: Release
+
 
 jobs:
 
   linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
     - run: cmake -B build
     - run: cmake --build build
 
-    - run: ctest -V
-      working-directory: build
+    - run: ctest --test-dir build -V
 
     - run: pip install -e .[lint,tests]
     - run: flake8
     - run: mypy .
-    - run: pytest
-
-  macos:
-    if: false
-    needs: linux
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - run: cmake -B build
-    - run: cmake --build build --parallel
-    - run: ctest -V
-      working-directory: build
-
-    - run: pip install -e .[tests]
     - run: pytest

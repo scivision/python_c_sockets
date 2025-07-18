@@ -16,7 +16,8 @@ Use contemporary point-point performant methods like websockets instead.
 
 ## Future
 
-We are beginning to implement these examples via C++17 header-only library [Kissnet](https://github.com/Ybalrid/kissnet).
+We are beginning to implement these examples via C++17 header-only library
+[Kissnet](https://github.com/Ybalrid/kissnet).
 This solves the issues of platform independence.
 
 Until the kissnet transition is complete, Windows users should use
