@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20...4.2)
 
 project(sockets LANGUAGES C CXX)
 
-enable_testin()
+enable_testing()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 

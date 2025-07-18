@@ -26,13 +26,13 @@ if(NOT HDF5_FOUND)
   return()
 endif()
 
-set(CMAKE_REQUIRED_INCLUDES ${HDF5_INCLUDE_DIRS})
-set(CMAKE_REQUIRED_LIBRARIES ${HDF5_LIBRARIES})
+set(CMAKE_REQUIRED_LIBRARIES HDF5::HDF5)
+
 check_source_compiles(C
 [=[
 #include "hdf5.h"
 int main(void){
-  printf(H5_VERS_MAJOR);
+  printf("%d\n", H5_VERS_MAJOR);
   return 0;
 }
 ]=]
