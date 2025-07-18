@@ -54,7 +54,14 @@ if (VERBOSE)
 
 bool first=false;
 
-    // loop: echo UDP packets back to client
+char nel_buf[sizeof(Nel)];
+memcpy(nel_buf, &Nel, sizeof(Nel));
+
+char *arr_buf = malloc(Nel * sizeof(float));
+if (!arr_buf)
+    error("ERROR allocating memory for arr_buf", 0);
+
+// loop: echo UDP packets back to client
 while (true){
   memset(buf, 0, BUFSIZE);
   // if (VERBOSE)
@@ -73,27 +80,29 @@ while (true){
   //  printf("server received %lu/%zd bytes: %s\n", strlen(buf), ret, buf);
 
   // generate dummy data stream of float32
-  for (size_t i=0; i<Nel; ++i)  array[i] = last+i;
+  for (size_t i=0; i<Nel; ++i)
+    array[i] = last+i;
+
   last+=Nel;
 
   //if (VERBOSE)
   //    printf("%d \n",Nel);
   //send length of float array first
-  char nel_buf[sizeof(Nel)];
   ret = sendto(s, nel_buf, sizeof(nel_buf), 0, (struct sockaddr *) &cliadd, clientlen);
-  if (ret < 0) error("ERROR in sending length sendto",s);
-  memcpy(&Nel, nel_buf, sizeof(Nel));
+  if (ret < 0)
+      error("ERROR in sendto (data length)",s);
 
   // then send float32 array
-  char arr_buf[sizeof(array)];
-  ret = sendto(s, arr_buf, Nel*sizeof(float), 0, (struct sockaddr *) &cliadd, clientlen);
-  if (ret < 0) error("ERROR in sending array sendto",s);
   memcpy(array, arr_buf, Nel*sizeof(float));
+  ret = sendto(s, arr_buf, Nel*sizeof(float), 0, (struct sockaddr *) &cliadd, clientlen);
+  if (ret < 0)
+    error("ERROR in sending array sendto",s);
 
 } //while
 
 free(buf);
 free(array);
+free(arr_buf);
 }
 
 int main(int argc, char **argv)

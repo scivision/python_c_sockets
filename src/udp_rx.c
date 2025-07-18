@@ -83,11 +83,10 @@ if (ret < 0)
 
 // get the length of data
 char nel_buf[sizeof(Nel)];
-ret = recvfrom(s, nel_buf, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
+ret = recvfrom(s, nel_buf, sizeof(uint32_t), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
     error("ERROR in recvfrom (data length)",s);
 memcpy(&Nel, nel_buf, sizeof(Nel));
-free(nel_buf);
 
 // get the data
 char *arr_buf = malloc(Nel * sizeof(float));

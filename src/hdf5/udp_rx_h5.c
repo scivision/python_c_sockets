@@ -124,11 +124,12 @@ memcpy(&Nel, nel_buf, sizeof(Nel));
 
 
 // get the data
-char arr_buf[sizeof(array)];
-ret = recvfrom(s, arr_buf, sizeof(arr_buf), 0, (struct sockaddr*) &serveraddr, &serverlen);
+char *arr_buf = malloc(Nel * sizeof(float));
+ret = recvfrom(s, arr_buf, Nel * sizeof(float), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
     error("ERROR in recvfrom",s);
 memcpy(array, arr_buf, Nel*sizeof(float));
+free(arr_buf);
 
 // check the data
 if (first) {
