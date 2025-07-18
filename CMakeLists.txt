@@ -18,29 +18,22 @@ foreach(t multicast_rx multicast_tx udp_rx udp_tx)
   target_include_directories(${t} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 endforeach()
 
-if(UNIX)
-
-add_test(NAME Multicast
-COMMAND sh -c "$<TARGET_FILE:multicast_tx> & $<TARGET_FILE:multicast_rx>")
-
-else()
-
 find_package(Python COMPONENTS Interpreter)
+
+if(Python_Interpreter_FOUND)
+  add_test(NAME Unicast
+  COMMAND Python::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/test/simul_exe.py $<TARGET_FILE:udp_tx> $<TARGET_FILE:udp_rx>)
+
+  add_test(NAME Multicast
+  COMMAND Python::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/test/simul_exe.py $<TARGET_FILE:multicast_tx> $<TARGET_FILE:multicast_rx>)
 
 # CMake / CTest cmd /c has long-standing known issues cascading cmd /c with
 # subsequent commands like start /b. The easy and robust alternative is using
 # Python subprocess.Popen() to run the executables in parallel.
-if(Python_Interpreter_FOUND)
 
-add_test(NAME Multicast
-COMMAND Python::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/test/simul_exe.py $<TARGET_FILE:multicast_tx> $<TARGET_FILE:multicast_rx>)
+  set_tests_properties(Multicast Unicast PROPERTIES TIMEOUT 10 LABELS "multicast")
 endif()
 
-endif()
-
-if(TEST Multicast)
-  set_tests_properties(Multicast PROPERTIES TIMEOUT 10 LABELS "multicast")
-endif()
 # --- kissnet
 add_executable(udp_kiss_rx src/loopback_udp.cpp)
 target_compile_features(udp_kiss_rx PRIVATE cxx_std_17)

@@ -7,7 +7,7 @@ namespace kn = kissnet;
 int main(int argc, char **argv)
 {
 std::string hostname = "127.0.0.1";
-int port=2000;
+int port=2005;
 
 if (argc>1) hostname = argv[1];
 if (argc>2) port = std::stoi(argv[2]);

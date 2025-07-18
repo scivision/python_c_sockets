@@ -12,12 +12,18 @@ p.add_argument("producer_exe", help="Path to the multicast producer executable")
 p.add_argument("consumer_exe", help="Path to the multicast consumer executable")
 args = p.parse_args()
 
-p1 = subprocess.Popen(args.producer_exe)
-p2 = subprocess.Popen(args.consumer_exe)
+p1 = subprocess.Popen([args.producer_exe])
+
+p2 = subprocess.Popen([args.consumer_exe], stdin=subprocess.PIPE, text=True)
 
 try:
-    p1.wait(timeout=10)  # Wait for producer to start
-    p2.wait(timeout=10)  # Wait for consumer to start
+    if p1.poll() is not None:
+        raise RuntimeError(f"Producer process {args.producer_exe} exited unexpectedly with code {p1.returncode}")
+
+    p1.wait(timeout=10)
+
+    p2.wait(timeout=10)
+
     assert p1.returncode == 0, f"Producer exited with code {p1.returncode}"
     assert p2.returncode == 0, f"Consumer exited with code {p2.returncode}"
     print("Both processes completed successfully.")

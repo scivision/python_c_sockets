@@ -38,6 +38,17 @@ static const int BUFSIZE=8192;
 
 int main(int argc, char **argv) {
 
+#ifdef _WIN32
+  // Initialize Winsock
+  WSADATA wsaData;
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+    fprintf(stderr, "consumer: WSAStartup failed\n");
+    return EXIT_FAILURE;
+  }
+
+  printf("consumer: Winsock initialized\n");
+#endif
+
 ssize_t ret;
 uint32_t Nel = BUFSIZE/4; // float32
 socklen_t serverlen;
@@ -45,25 +56,28 @@ struct sockaddr_in6 serveraddr;
 struct addrinfo *server;
 
 char *hostname = "::1";
-int port=2000;
+int port=2001;
+int Nloop=5;
 
 char buf[1]="\n";
 float * array;
 array = malloc(Nel*sizeof(float));
 if (!array)
-    error("ERROR allocating memory for array", 0);
+    error("consumer: allocating memory for array", 0);
 
 if (argc>1)
     hostname = argv[1];
 if (argc>2)
     port = atoi(argv[2]);
+if (argc>3)
+    Nloop = atoi(argv[3]);
 
 /* socket: create the socket */
 int s = socket(AF_INET6, SOCK_DGRAM, 0);
 if (s < 0)
-    error("ERROR opening socket",s);
+    error("consumer: open socket",s);
 
-ret = getaddrinfo(hostname,NULL,NULL,&server);
+ret = getaddrinfo(hostname, NULL, NULL, &server);
 
 /* build the server's Internet address */
 memset((char *) &serveraddr,0, sizeof(serveraddr));
@@ -73,28 +87,32 @@ serveraddr.sin6_port = htons(port);
 bool first = true;
 float last=0.;
 // loop
-while (true){
+for (int i=0; i<Nloop; ++i) {
+
 // ask server for data (demo server expects simply a line return)
 serverlen = sizeof(serveraddr);
+memcpy(&serveraddr.sin6_addr, &((struct sockaddr_in6*)server->ai_addr)->sin6_addr, sizeof(serveraddr.sin6_addr));
 ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr*) &serveraddr, serverlen);
 if (ret < 0)
-    error("ERROR in sendto",s);
+    error("consumer: sendto",s);
 //printf("sent %x \r",buf);
 
 // get the length of data
 char nel_buf[sizeof(Nel)];
 ret = recvfrom(s, nel_buf, sizeof(uint32_t), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
-    error("ERROR in recvfrom (data length)",s);
+    error("consumer: recvfrom (data length)",s);
 memcpy(&Nel, nel_buf, sizeof(Nel));
 
 // get the data
 char *arr_buf = malloc(Nel * sizeof(float));
 if (!arr_buf)
-    error("ERROR allocating memory for arr_buf", 0);
+    error("consumer: allocating memory for arr_buf", 0);
+
 ret = recvfrom(s, arr_buf, Nel * sizeof(float), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
-    error("ERROR in recvfrom (payload)",s);
+    error("consumer: recvfrom (payload)",s);
+
 memcpy(array, arr_buf, Nel*sizeof(float));
 free(arr_buf);
 
@@ -102,21 +120,30 @@ free(arr_buf);
 if (first) {
     first = false;
     last = array[0]-1;
-    printf("Initial last: %f\n",last);
+    printf("consumer: Initial last: %f\n",last);
 }
 
-if (fabsf(array[0]-(float)1.)<0.99){
-    printf("last: %f data: %f\n",last,array[0]-1);
-    printf("may be wrapping in float32");
+if (fabsf(array[0]-(float)1.) < 0.99){
+    printf("consumer: last: %f data: %f\n",last,array[0]-1);
+    printf("consumer: may be wrapping in float32");
     return EXIT_FAILURE;
 }
 
 
 last = array[Nel-1];
 
-}
-
+} // for
 
 free(array);
+
+#ifdef _WIN32
+  closesocket(s);
+  WSACleanup();
+#else
+  close(s);
+#endif
+
+printf("consumer: done\n");
+
 return EXIT_SUCCESS;
 }
