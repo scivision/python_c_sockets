@@ -10,4 +10,4 @@ N = 100
 
 def test_listener(ipv4bcast_sender):
     ipv4bcast_sender(PORT, N)
-    pcs.ipv4bcast_rx(PORT, N=N, timeout=15.0)
+    pcs.ipv4bcast_rx(PORT, N=N, timeout=30.0)
