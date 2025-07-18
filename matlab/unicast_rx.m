@@ -8,26 +8,25 @@
 function unicast_rx(N, opt)
 arguments
   N (1,1) {mustBeInteger,mustBePositive} % number of total packets to read
-  opt.host (1,1) string = '::1'  % '::1' is to ipv6 what 'localhost' is to ipv4
+  opt.host {mustBeTextScalar} = '::1'  % '::1' is to ipv6 what 'localhost' is to ipv4
   opt.port (1,1) {mustBeInteger,mustBePositive} = 2000
   opt.Nel (1,1) {mustBeInteger,mustBePositive} = 2048 % number of elements per packet
 end
 
 S = udpport(opt.host, opt.port, "datagram") ; %8192 byte max read at one time
 S.timeout=0.2;
-fopen(S);
-assert(strcmp(S.Status,'open'),'no connection on socket')
+assert(strcmp(S.Status,'open'), 'no connection on socket')
 % Do NOT connect or bind
 first=true;
 
 for i = 1:N-1
   tic
   %% host -> device
-  fwrite(S,'\n')
+  write(S, '\n')
   %% device -> host
 
-  fread(S,1,'uint32');
-  dat = fread(S, opt.Nel,'float32');
+  read(S, 1, 'uint32');
+  dat = read(S, opt.Nel, 'float32');
 
   if length(dat) ~= opt.Nel
     disp(length(dat))
@@ -48,6 +47,7 @@ for i = 1:N-1
   % last = dat(end);
 end
 
-fclose(S);
+flush(S, "input")
+delete(S)
 
-end % function
+end

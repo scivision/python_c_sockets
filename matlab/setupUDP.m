@@ -9,4 +9,4 @@ s.setSoTimeout(opt.timeout*1000)
 s.setReuseAddress(true)
 ictb=false;
 
-end %function
+end

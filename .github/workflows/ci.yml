@@ -26,6 +26,7 @@ jobs:
 
   core:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
 
     strategy:
       matrix:
@@ -50,6 +51,7 @@ jobs:
 
   windows:
     runs-on: windows-latest
+    timeout-minutes: 10
 
     strategy:
       matrix:
@@ -94,6 +96,7 @@ jobs:
 
   python:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
 
     strategy:
       matrix:
