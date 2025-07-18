@@ -24,6 +24,7 @@
 #include <unistd.h>
 #endif
 
+#include "myerr.h"
 
 // HDF5
 #include "hdf5.h"
@@ -34,14 +35,6 @@ static const int RANK=1;
 static const int BUFSIZE=8192;
 static const size_t Nloop=1000; // to not fill your hard drive!
 
-#if __has_c_attribute(noreturn)
-[[ noreturn ]]
-#endif
-void error(char *msg, int sock) {
-perror(msg);
-close(sock);
-exit(EXIT_FAILURE);
-}
 
 int main(int argc, char **argv) {
 //--------------------------------------------------------------------

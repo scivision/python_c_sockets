@@ -30,28 +30,10 @@
 #include <unistd.h>
 #endif
 
-#include <sys/types.h>
-
-#ifndef ssize_t
-#ifdef _WIN32
-#include <BaseTsd.h>
-#define ssize_t SSIZE_T
-#else
-#define ssize_t ptrdiff_t
-#endif
-#endif
+#include "myerr.h"
 
 static const size_t BUFSIZE=8192;
 static const bool VERBOSE=true;
-
-#if __has_c_attribute(noreturn)
-[[ noreturn ]]
-#endif
-static void error(char *msg, int sock) {
-perror(msg);
-close(sock);
-exit(EXIT_FAILURE);
-}
 
 
 static void serv(int s) {
@@ -81,7 +63,7 @@ while (true){
   if (ret < 0)
       error("ERROR in recvfrom",s);
   if(!first){
-      printf("sending now: %lu \n", ret);
+      printf("sending now: %zu \n", ret);
       first=true;
   }
 

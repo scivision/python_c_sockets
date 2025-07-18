@@ -32,14 +32,7 @@ UDP multicast IPv6 receive in C
 #include <unistd.h>
 #endif
 
-#if __has_c_attribute(noreturn)
-[[ noreturn ]]
-#endif
-void error(char *msg, int sock) {
-    perror(msg);
-    close(sock);
-    exit(EXIT_FAILURE);
-}
+#include "myerr.h"
 
 int main(int argc, char **argv)
 {

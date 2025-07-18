@@ -40,16 +40,10 @@ If using loopback, expect several Gb/sec. Otherwise speed limited by network int
 #endif
 #endif
 
+#include "myerr.h"
+
 static const int BUFSIZE=8192;
 
-#if __has_c_attribute(noreturn)
-[[ noreturn ]]
-#endif
-static void error(char *msg, int sock) {
-perror(msg);
-close(sock);
-exit(EXIT_FAILURE);
-}
 
 int main(int argc, char **argv) {
 
