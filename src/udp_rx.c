@@ -31,9 +31,21 @@ If using loopback, expect several Gb/sec. Otherwise speed limited by network int
 #include <unistd.h>
 #endif
 
+#ifndef ssize_t
+#ifdef _WIN32
+#include <BaseTsd.h>
+#define ssize_t SSIZE_T
+#else
+#define ssize_t ptrdiff_t
+#endif
+#endif
+
 static const int BUFSIZE=8192;
 
-void error(char *msg, int sock) {
+#if __has_c_attribute(noreturn)
+[[ noreturn ]]
+#endif
+static void error(char *msg, int sock) {
 perror(msg);
 close(sock);
 exit(EXIT_FAILURE);

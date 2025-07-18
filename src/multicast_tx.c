@@ -43,7 +43,7 @@ ref: http://tldp.org/HOWTO/Multicast-HOWTO-6.html
 #if __has_c_attribute(noreturn)
 [[ noreturn ]]
 #endif
-void error(char *msg, int sock) {
+static void error(char *msg, int sock) {
     perror(msg);
     close(sock);
     exit(EXIT_FAILURE);
@@ -120,6 +120,12 @@ while (true) {
   cnt = sendto(sock, message, sizeof(message), 0, (struct sockaddr *) &group, addrlen);
   if (cnt < 0)
     error("sendto",sock);
+
+#ifdef _MSC_VER
+  Sleep(1000);
+#else
   sleep(1);
+#endif
 }
+
 }
