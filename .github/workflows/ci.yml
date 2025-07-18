@@ -8,6 +8,7 @@ on:
       - "**.cpp"
       - "**.cmake"
       - "**/CMakeLists.txt"
+      - ".github/workflows/ci.yml"
   workflow_dispatch:
 
 # avoid wasted runs
@@ -29,7 +30,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -41,6 +42,41 @@ jobs:
     - run: cmake --build build
 
     - run: ctest --test-dir build -V
+      if: runner.os != 'macOS'
+
+    - run: ctest --test-dir build -E Multicast -V
+      if: runner.os == 'macOS'
+
+    - run: pip install -e .[lint,tests]
+    - run: flake8
+    - run: mypy .
+    - run: pytest
+
+  windows-gcc:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        c: [ {cc: gcc, cxx: g++} ]
+
+    env:
+      CC: ${{ matrix.c.cc }}
+      CXX: ${{ matrix.c.cxx }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - run: cmake -B build
+    - run: cmake --build build
+
+    - run: ctest --test-dir build -V
+      if: matrix.cc != 'cl'
+
+    - run: ctest --test-dir build -E Multicast -V
+      if: matrix.cc == 'cl'
 
     - run: pip install -e .[lint,tests]
     - run: flake8
