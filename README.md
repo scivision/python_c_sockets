@@ -81,6 +81,7 @@ write a huge file.
 #### Python
 
 Run the `unicast_tx` and in the second terminal window run:
+
 ```sh
 python unicast_rx.py -o test.h5
 ```
@@ -88,22 +89,27 @@ python unicast_rx.py -o test.h5
 #### C
 
 Run the `unicast_tx` and in the second terminal window run:
+
 ```sh
 ./unicast_rx
 ```
 
 ## IPv6 Multicast examples
 
-1. open a terminal:
-   ```sh
-   ./multicast_tx
-   ```
-2. open a second terminal:
-   ```sh
-   ./multicast_rx
-   ```
+Open a terminal:
+
+```sh
+./multicast_tx
+```
+
+Then open a second terminal:
+
+```sh
+./multicast_rx
+```
 
 ### IPv4 multicast
+
 In general IPv6 should be used instead.
 
 1. open a terminal:

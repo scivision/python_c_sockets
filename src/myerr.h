@@ -20,9 +20,17 @@
 [[ noreturn ]]
 #endif
 static void error(char *msg, int sock) {
-    perror(msg);
-    close(sock);
-    exit(EXIT_FAILURE);
+
+#ifdef _WIN32
+  // https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+  fprintf(stderr, "%s Error code: %d\n", msg, WSAGetLastError());
+  closesocket(sock);
+#else
+  perror(msg);
+  close(sock);
+#endif
+
+  exit(EXIT_FAILURE);
 }
 
 #endif // MYERR_H

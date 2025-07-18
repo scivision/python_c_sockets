@@ -1,25 +1,5 @@
 include(CheckSourceCompiles)
 
-foreach(t multicast_rx multicast_tx udp_rx udp_tx)
-  add_executable(${t} ${t}.c)
-  target_compile_features(${t} PRIVATE c_std_11)
-  target_link_libraries (${t} PRIVATE ${WINSOCK_LIBRARIES})
-endforeach()
-
-# --- kissnet
-add_executable(udp_kiss_rx loopback_udp.cpp)
-target_compile_features(udp_kiss_rx PRIVATE cxx_std_17)
-target_include_directories(udp_kiss_rx PRIVATE ${kissnet_SOURCE_DIR})
-target_link_libraries(udp_kiss_rx PRIVATE ${WINSOCK_LIBRARIES})
-add_test(NAME LoopbackUDP COMMAND udp_kiss_rx)
-
-# --- linux only
-if(LINUX)
-  add_executable(get_interfaces linux/get_interfaces.c)
-  add_test(NAME InterfaceNames COMMAND get_interfaces)
-  set_tests_properties(InterfaceNames PROPERTIES TIMEOUT 5)
-endif()
-
 # --- HDF5
 find_package(HDF5 COMPONENTS C)
 if(NOT HDF5_FOUND)
