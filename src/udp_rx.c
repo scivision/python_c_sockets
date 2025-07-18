@@ -31,15 +31,6 @@ If using loopback, expect several Gb/sec. Otherwise speed limited by network int
 #include <unistd.h>
 #endif
 
-#ifndef ssize_t
-#ifdef _WIN32
-#include <BaseTsd.h>
-#define ssize_t SSIZE_T
-#else
-#define ssize_t ptrdiff_t
-#endif
-#endif
-
 #include "myerr.h"
 
 static const int BUFSIZE=8192;
@@ -59,6 +50,8 @@ int port=2000;
 char buf[1]="\n";
 float * array;
 array = malloc(Nel*sizeof(float));
+if (!array)
+    error("ERROR allocating memory for array", 0);
 
 if (argc>1)
     hostname = argv[1];
@@ -94,13 +87,17 @@ ret = recvfrom(s, nel_buf, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serv
 if (ret < 0)
     error("ERROR in recvfrom (data length)",s);
 memcpy(&Nel, nel_buf, sizeof(Nel));
+free(nel_buf);
 
 // get the data
-char arr_buf[sizeof(array)];
-ret = recvfrom(s, arr_buf, sizeof(arr_buf), 0, (struct sockaddr*) &serveraddr, &serverlen);
+char *arr_buf = malloc(Nel * sizeof(float));
+if (!arr_buf)
+    error("ERROR allocating memory for arr_buf", 0);
+ret = recvfrom(s, arr_buf, Nel * sizeof(float), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
     error("ERROR in recvfrom (payload)",s);
 memcpy(array, arr_buf, Nel*sizeof(float));
+free(arr_buf);
 
 // check the data
 if (first) {

@@ -41,7 +41,7 @@ HDF5_OK
 
 if(HDF5_OK)
 add_executable(udp_rx_h5 hdf5/udp_rx_h5.c)
-target_include_directories(udp_rx_h5 PRIVATE ${HDF5_INCLUDE_DIRS})
-target_link_libraries(udp_rx_h5 ${HDF5_C_LIBRARIES} ${WINSOCK_LIBRARIES})
+target_include_directories(udp_rx_h5 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(udp_rx_h5 HDF5::HDF5 ${WINSOCK_LIBRARIES})
 #target_compile_options(udp_rx_h5 PRIVATE -Wno-reserved-id-macro) #hdf5.h lint
-endif(HDF5_OK)
+endif()
