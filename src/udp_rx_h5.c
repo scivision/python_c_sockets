@@ -93,6 +93,8 @@ int port=2001;
 char buf[2]="\n";
 float * array;
 array = malloc(Nel*sizeof(float));
+if (!array)
+    error("consumer: allocating memory for array", 0);
 
 if (argc > 1)
     hostname = argv[1];
@@ -129,7 +131,7 @@ if (ret < 0)
 // get the length of data -- noting that Windows can only handle char* for buffer instead of void*
 // so we use a char buffer and then memcpy the data into our Nel variable
 char nel_buf[sizeof(Nel)];
-ret = recvfrom(s, nel_buf, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
+ret = recvfrom(s, nel_buf, sizeof(uint32_t), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
   error("consumer: recvfrom (data length)", s);
 memcpy(&Nel, nel_buf, sizeof(Nel));
