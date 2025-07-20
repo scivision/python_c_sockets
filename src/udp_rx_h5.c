@@ -79,7 +79,7 @@ int port=2000;
 
 
 size_t i=0;
-char buf[1]="\n";
+char buf[2]="\n";
 float * array;
 array = malloc(Nel*sizeof(float));
 

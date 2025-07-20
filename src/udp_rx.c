@@ -59,7 +59,7 @@ char *hostname = "::1";
 int port=2001;
 int Nloop=5;
 
-char buf[1]="\n";
+char buf[2]="\n";
 float * array;
 array = malloc(Nel*sizeof(float));
 if (!array)
