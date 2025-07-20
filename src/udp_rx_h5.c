@@ -119,6 +119,7 @@ for (int i=0; i<Nloop; ++i)
 {
 // ask server for data (demo server expects simply a line return)
 serverlen = sizeof(serveraddr);
+memcpy(&serveraddr.sin6_addr, &((struct sockaddr_in6*)server->ai_addr)->sin6_addr, sizeof(serveraddr.sin6_addr));
 ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr*) &serveraddr, serverlen);
 if (ret < 0)
     error("consumer: sendto",s);
