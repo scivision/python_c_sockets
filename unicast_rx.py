@@ -20,7 +20,7 @@ def main():
     p = ArgumentParser(description="UDP unicast RX demo with optional HDF5 writing")
     p.add_argument("-o", "--ofn", help="output hdf5 filename to write")
     p.add_argument("-i", "--host", help="IPv6 address of receiver. ::1 is loopback", default="::1")
-    p.add_argument("-p", "--port", help="port", type=int, default=2000)
+    p.add_argument("-p", "--port", help="port", type=int, default=2001)
     p = p.parse_args()
 
     print("unicast server", p.host, "port", p.port)

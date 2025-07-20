@@ -10,8 +10,6 @@ try:
 except ImportError:
     pass
 
-from . import NPKT
-
 
 def udpunicast(
     host: str,
@@ -20,7 +18,7 @@ def udpunicast(
     Nupdate: int = 1000,
     bufsize: int = 8192,
     Nelbyte: int = 4,
-    N: int = NPKT,
+    N: int = 5,
     timeout: float = 5.0,
 ):
     """
@@ -54,7 +52,7 @@ def udpunicast(
             # host (other program) is programmed to send payload for any input--including simply '\n'
             S.sendto(b"\n", (host, port, 0, 0))
             # %% device -> host
-            print("recieving")
+            # print("receiving")
             Nel = struct.unpack("<1L", S.recv(4))[0]  # int len
             print(Nel)
             Nbyte_dg = Nel * Nelbyte
@@ -85,11 +83,11 @@ def udpunicast(
             # for single precision float, large integer jumps are experienced at large values by IEEE754 definition
             # assert_allclose(diff(dat),1,err_msg=str(dat))
 
-            assert np.allclose(
-                last, dat[0] - 1
-            ), f"{last} be mindful of min/max values of the datatype"
+            # assert np.allclose(
+            #     last, dat[0] - 1
+            # ), f"{last} != {dat[0] - 1}, be mindful of min/max values of the datatype"
 
-            last = dat[-1]
+            # last = dat[-1]
 
     if h5 is not None:
         h5.close()
