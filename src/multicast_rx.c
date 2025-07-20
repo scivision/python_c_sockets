@@ -113,7 +113,7 @@ if (bind(sock, (struct sockaddr *) &group, sizeof(group)) < 0)
 
 char message[100];
 long cnt;
-unsigned int addrlen=sizeof(group);
+socklen_t addrlen=sizeof(group);
 char serverstr[INET6_ADDRSTRLEN];
 
 for (int i = 0; i < Nloop; i++) {
