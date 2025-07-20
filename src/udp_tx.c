@@ -49,8 +49,10 @@ if (!buf)
     error("producer: allocating memory for buf", 0);
 
 float* array = malloc(Nel*sizeof(float));
-if (!array)
-    error("producer: allocating memory for array", 0);
+if (!array){
+  fprintf(stderr, "consumer: allocating memory for arr_buf failed, size: %zu\n", Nel * sizeof(float));
+  error("consumer: allocating memory elements for arr_buf", 0);
+}
 
 socklen_t clientlen = sizeof(cliadd);
 
@@ -62,8 +64,10 @@ char nel_buf[sizeof(Nel)];
 memcpy(nel_buf, &Nel, sizeof(Nel));
 
 char *arr_buf = malloc(Nel * sizeof(float));
-if (!arr_buf)
-    error("producer: allocating memory for arr_buf", 0);
+if (!arr_buf){
+  fprintf(stderr, "consumer: allocating memory for arr_buf failed, size: %zu\n", Nel * sizeof(float));
+  error("consumer: allocating memory elements for arr_buf", 0);
+}
 
 // loop: echo UDP packets back to client
 for (int i=0; i<Nloop; ++i) {

@@ -33,10 +33,15 @@ static const char *FILENAME = "testc.h5";
 static const int RANK=1;
 
 static const int BUFSIZE=8192;
-static const size_t Nloop=1000; // to not fill your hard drive!
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
+
+
+int Nloop=5;
+if (argc > 3)
+    Nloop = atoi(argv[3]);
 //--------------------------------------------------------------------
 // HDF5 stuff https://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/examples/h5_extend.c
 hid_t       fid, dset, memspace_id,dataspace_id, prop;
@@ -65,20 +70,18 @@ if (status < 0){
 dset = H5Dcreate2 (fid, "/data", H5T_IEEE_F32LE, dataspace_id,
                                     H5P_DEFAULT, prop, H5P_DEFAULT);
 
-printf("writing data to %s\n",FILENAME);
+printf("consumer: writing data to %s\n",FILENAME);
 //------------------------------------------------------------------------------
 
 ssize_t ret;
-size_t Nel = BUFSIZE/4; // float32->4 bytes
+uint32_t Nel = BUFSIZE/4; // float32->4 bytes
 socklen_t serverlen;
 struct sockaddr_in6 serveraddr;
 struct addrinfo *server;
 
 char *hostname = "::1";
-int port=2000;
+int port=2001;
 
-
-size_t i=0;
 char buf[2]="\n";
 float * array;
 array = malloc(Nel*sizeof(float));
@@ -91,7 +94,7 @@ if (argc > 2)
 /* socket: create the socket */
 int s = socket(AF_INET6, SOCK_DGRAM, 0);
 if (s < 0)
-    error("ERROR opening socket",s);
+    error("consumer: opening socket",s);
 
 ret = getaddrinfo(hostname,NULL,NULL,&server);
 
@@ -104,13 +107,13 @@ serveraddr.sin6_port = htons(port);
 bool first = true;
 float last=0.;
 // loop
-while (true)
+for (int i=0; i<Nloop; ++i)
 {
 // ask server for data (demo server expects simply a line return)
 serverlen = sizeof(serveraddr);
 ret = sendto(s, buf, strlen(buf), 0, (struct sockaddr*) &serveraddr, serverlen);
 if (ret < 0)
-    error("ERROR in sendto",s);
+    error("consumer: sendto",s);
 
 // https://linux.die.net/man/2/recvfrom
 // https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
@@ -119,15 +122,20 @@ if (ret < 0)
 char nel_buf[sizeof(Nel)];
 ret = recvfrom(s, nel_buf, sizeof(Nel), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
-    error("ERROR in recvfrom",s);
+  error("consumer: recvfrom (data length)", s);
 memcpy(&Nel, nel_buf, sizeof(Nel));
-
+printf("consumer: received data length: %u\n", Nel);
 
 // get the data
 char *arr_buf = malloc(Nel * sizeof(float));
+if (!arr_buf){
+  fprintf(stderr, "consumer: allocating memory for arr_buf failed, size: %zu\n", Nel * sizeof(float));
+  error("consumer: allocating memory elements for arr_buf", 0);
+}
+
 ret = recvfrom(s, arr_buf, Nel * sizeof(float), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)
-    error("ERROR in recvfrom",s);
+    error("consumer: recvfrom (payload)", s);
 memcpy(array, arr_buf, Nel*sizeof(float));
 free(arr_buf);
 
@@ -135,12 +143,12 @@ free(arr_buf);
 if (first) {
   first = false;
   last = array[0]-1;
-  printf("Initial last: %f\n",last);
+  printf("consumer: Initial last: %f\n",last);
 }
 
 if (fabsf(array[0]-(float)1.)<0.99){
-  printf("last: %f data: %f\n",last,array[0]-1);
-  printf("may be wrapping in float32");
+  printf("consumer: last: %f data: %f\n",last,array[0]-1);
+  printf("consumer: may be wrapping in float32");
   return EXIT_FAILURE;
 }
 
@@ -167,12 +175,6 @@ if (status<0){
   return EXIT_FAILURE;
 }
 
-++i;
-
-if (i==Nloop){
-  printf("this concludes this test writing %s\n",FILENAME);
-  break;
-}
 }
 
 status = H5Sclose (dataspace_id);
@@ -180,5 +182,8 @@ status = H5Dclose (dset);
 status = H5Fclose (fid);
 
 free(array);
+
+printf("consumer: done\n");
+
 return EXIT_SUCCESS;
 }

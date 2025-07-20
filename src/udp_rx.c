@@ -106,8 +106,10 @@ memcpy(&Nel, nel_buf, sizeof(Nel));
 
 // get the data
 char *arr_buf = malloc(Nel * sizeof(float));
-if (!arr_buf)
-    error("consumer: allocating memory for arr_buf", 0);
+if (!arr_buf){
+  fprintf(stderr, "consumer: allocating memory for arr_buf failed, size: %zu\n", Nel * sizeof(float));
+  error("consumer: allocating memory elements for arr_buf", 0);
+}
 
 ret = recvfrom(s, arr_buf, Nel * sizeof(float), 0, (struct sockaddr*) &serveraddr, &serverlen);
 if (ret < 0)

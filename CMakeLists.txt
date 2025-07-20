@@ -76,6 +76,12 @@ if(HDF5_FOUND)
     add_executable(udp_rx_h5 src/udp_rx_h5.c)
     target_include_directories(udp_rx_h5 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(udp_rx_h5 HDF5::HDF5 ${WINSOCK_LIBRARIES})
+
+    if(Python_Interpreter_FOUND)
+      add_test(NAME UnicastUDP_HDF5
+      COMMAND Python::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/test/simul_exe.py $<TARGET_FILE:udp_tx> $<TARGET_FILE:udp_rx_h5>)
+      set_tests_properties(UnicastUDP_HDF5 PROPERTIES TIMEOUT 10 LABELS "hdf5")
+    endif()
   endif()
 endif()
 
