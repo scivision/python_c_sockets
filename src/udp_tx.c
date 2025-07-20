@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 // setup
 struct sockaddr_in6 serveraddr;
 // user mode setting
-unsigned char ttl=1; //default
+const char ttl=1; //default
 
 int port=2001;
 if (argc>1)
@@ -145,8 +145,8 @@ if (s < 0)
 
 printf("producer: socket %d on port %d \n", s, port);
 // instant restart capability
-int optval = 1;
-setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int));
+const char optval = 1;
+setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &optval , sizeof(int));
 
 // server IP
 memset((char *) &serveraddr, 0, sizeof(serveraddr));

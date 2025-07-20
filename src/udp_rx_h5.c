@@ -179,8 +179,6 @@ status = H5Sclose (dataspace_id);
 status = H5Dclose (dset);
 status = H5Fclose (fid);
 
-
-
 free(array);
 return EXIT_SUCCESS;
 }
