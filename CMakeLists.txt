@@ -4,7 +4,7 @@ project(sockets LANGUAGES C CXX)
 
 enable_testing()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+include(CheckSymbolExists)
 
 include(cmake/compilers.cmake)
 include(cmake/kissnet.cmake)
@@ -54,6 +54,21 @@ if(LINUX)
   )
 endif()
 
-add_subdirectory(src)
+# --- HDF5
+find_package(HDF5 COMPONENTS C)
+if(HDF5_FOUND)
+  block()
+  set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+  set(CMAKE_REQUIRED_LIBRARIES HDF5::HDF5)
+
+  check_symbol_exists(H5_VERS_MAJOR "hdf5.h" HDF5_OK)
+  endblock()
+
+  if(HDF5_OK)
+    add_executable(udp_rx_h5 src/udp_rx_h5.c)
+    target_include_directories(udp_rx_h5 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(udp_rx_h5 HDF5::HDF5 ${WINSOCK_LIBRARIES})
+  endif()
+endif()
 
 file(GENERATE OUTPUT .gitignore CONTENT "*")

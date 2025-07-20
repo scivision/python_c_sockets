@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <linux/if_link.h>
 
+
 int main(void)
 {
    struct ifaddrs *ifaddr, *ifa;
@@ -16,7 +17,7 @@ int main(void)
 
    if (getifaddrs(&ifaddr) == -1) {
        perror("getifaddrs");
-       exit(EXIT_FAILURE);
+       return EXIT_FAILURE;
    }
 
    /* Walk through linked list, maintaining head pointer so we
