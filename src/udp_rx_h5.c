@@ -26,7 +26,6 @@
 
 #include "myerr.h"
 
-// HDF5
 #include "hdf5.h"
 
 static const char *FILENAME = "testc.h5";
@@ -37,7 +36,16 @@ static const int BUFSIZE=8192;
 
 int main(int argc, char **argv)
 {
+#ifdef _WIN32
+  // Initialize Winsock
+  WSADATA wsaData;
+  if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+    fprintf(stderr, "consumer: WSAStartup failed\n");
+    return EXIT_FAILURE;
+  }
 
+  printf("consumer: Winsock initialized\n");
+#endif
 
 int Nloop=5;
 if (argc > 3)
@@ -182,6 +190,13 @@ status = H5Dclose (dset);
 status = H5Fclose (fid);
 
 free(array);
+
+#ifdef _WIN32
+  closesocket(s);
+  WSACleanup();
+#else
+  close(s);
+#endif
 
 printf("consumer: done\n");
 
