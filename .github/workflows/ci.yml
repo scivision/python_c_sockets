@@ -90,7 +90,7 @@ jobs:
     - run: ctest --test-dir build -V
       if: matrix.config.name != 'MSVC'
 
-    - run: ctest --test-dir build -E Multicast -V -C Release
+    - run: ctest --test-dir build -V -C Release
       if: matrix.config.name == 'MSVC'
 
 

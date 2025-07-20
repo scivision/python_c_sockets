@@ -70,7 +70,7 @@ for (int i=0; i<Nloop; ++i) {
 
   memset(buf, 0, BUFSIZE);
   if (VERBOSE)
-      printf("producer: set buffer size %lu \n", BUFSIZE);
+      printf("producer: set buffer size %zu \n", BUFSIZE);
 
   ssize_t ret = recvfrom(s, buf, BUFSIZE, 0, (struct sockaddr *) &cliadd, &clientlen);
   if (ret < 0)
@@ -83,7 +83,7 @@ for (int i=0; i<Nloop; ++i) {
   inet_ntop(AF_INET6, &(cliadd.sin6_addr), clistr, INET6_ADDRSTRLEN);
 
   if (VERBOSE)
-    printf("producer: received %lu/%zd bytes: %s\n", strlen(buf), ret, buf);
+    printf("producer: received %zu/%zd bytes: %s\n", strlen(buf), ret, buf);
 
   // generate dummy data stream of float32
   for (size_t i=0; i<Nel; ++i)

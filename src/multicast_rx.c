@@ -77,7 +77,14 @@ setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
 // multicast group config
 group.sin6_family = AF_INET6;
 group.sin6_port = htons(mcport);
+group.sin6_flowinfo = 0;
+group.sin6_scope_id = 0;
+#ifdef _WIN32
+// On Windows, bind to any address for multicast reception -- MSVC needs this specifically.
+inet_pton(AF_INET6, "::", &group.sin6_addr);
+#else
 group.sin6_addr = in6addr_any;
+#endif
 
 // reference
 // https://docs.oracle.com/cd/E19455-01/806-1017/auto2/index.html
@@ -99,6 +106,7 @@ if (setsockopt(sock, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq, sizeof(mreq)) < 0)
   error("consumer: setsockopt mreq", sock);
 #endif
 
+// https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-bind
 
 if (bind(sock, (struct sockaddr *) &group, sizeof(group)) < 0)
   error("consumer: bind",sock);
