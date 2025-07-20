@@ -109,7 +109,7 @@ jobs:
       with:
         python-version: '3.x'
 
-    - run: pip install -e .[lint,tests]
+    - run: pip install -r requirements-dev.txt
     - run: flake8
     - run: mypy .
     - run: pytest

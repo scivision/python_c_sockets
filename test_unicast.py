@@ -1,6 +1,8 @@
 import pytest
 import os
-import python_c_sockets.rx as pcs
+import time
+
+from unicast_rx import udpunicast
 
 CI = bool(os.environ.get("CI"))
 
@@ -8,7 +10,8 @@ CI = bool(os.environ.get("CI"))
 @pytest.mark.usefixtures("unicast_sender")
 @pytest.mark.skipif(CI, reason="Many CI's don't have IPv6")
 def test_listener():
-    port = 2000
-    addr = "::1"
 
-    pcs.udpunicast(addr, port, N=1000)
+    time.sleep(0.1)
+    # need delay to allow the sender to start
+
+    udpunicast(host="::1", port=2001, N=5)

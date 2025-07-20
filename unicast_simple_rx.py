@@ -48,8 +48,8 @@ if __name__ == "__main__":
     p = ArgumentParser(description="UDP unicast RX demo")
     p.add_argument("-i", "--host", help="IPv6 address of receiver. ::1 is loopback", default="::1")
     p.add_argument("-p", "--port", help="port", type=int, default=2000)
-    p = p.parse_args()
+    args = p.parse_args()
 
-    print("unicast client", p.host, "port", p.port)
+    print("unicast client", args.host, "port", args.port)
 
-    udp_simple_rx(p.host, p.port)
+    udp_simple_rx(args.host, args.port)

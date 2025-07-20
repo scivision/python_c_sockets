@@ -1,5 +1,5 @@
 % Simple send/receive to companion UDP C-code server on localhost or other device
-% prints rolling mean of cycle time (typical <80 microseconds on localhost)
+% median cycle time <80 microseconds on localhost
 %
 % It does 2 UDP reads per cycle:
 % 1) get number of float32 via int
@@ -9,7 +9,7 @@ function unicast_rx(N, opt)
 arguments
   N (1,1) {mustBeInteger,mustBePositive} % number of total packets to read
   opt.host {mustBeTextScalar} = '::1'  % '::1' is to ipv6 what 'localhost' is to ipv4
-  opt.port (1,1) {mustBeInteger,mustBePositive} = 2000
+  opt.port (1,1) {mustBeInteger,mustBePositive} = 2001
   opt.Nel (1,1) {mustBeInteger,mustBePositive} = 2048 % number of elements per packet, 8192 byte max read at one time
 end
 
@@ -23,7 +23,7 @@ rtoc = zeros(N-1, 1);
 for i = 1:N-1
   tic
   %% host -> device
-  write(S, '\n', opt.host, opt.port)
+  write(S, '\n', 'string', opt.host, opt.port)
   %% device -> host
 
   read(S, 1, 'uint32');
