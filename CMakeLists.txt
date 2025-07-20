@@ -40,6 +40,8 @@ target_compile_features(udp_kiss_rx PRIVATE cxx_std_17)
 target_include_directories(udp_kiss_rx PRIVATE ${kissnet_SOURCE_DIR})
 target_link_libraries(udp_kiss_rx PRIVATE ${WINSOCK_LIBRARIES})
 
+target_compile_definitions(multicast_tx PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>)
+
 add_test(NAME LoopbackUDP COMMAND udp_kiss_rx)
 set_tests_properties(LoopbackUDP PROPERTIES LABELS "kissnet")
 
