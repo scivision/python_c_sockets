@@ -1,13 +1,19 @@
 cmake_minimum_required(VERSION 3.25...4.2)
 
-project(sockets LANGUAGES C CXX)
+project(sockets LANGUAGES C)
+
+option(kissnet "Use kissnet C++ example")
+
+if(kissnet)
+  enable_language(CXX)
+  include(cmake/kissnet.cmake)
+endif()
 
 enable_testing()
 
 include(CheckSymbolExists)
 
 include(cmake/compilers.cmake)
-include(cmake/kissnet.cmake)
 
 set(WINSOCK_LIBRARIES "$<$<BOOL:${WIN32}>:wsock32;ws2_32;Iphlpapi>")
 
@@ -34,23 +40,23 @@ if(Python_Interpreter_FOUND)
   set_tests_properties(Multicast Unicast PROPERTIES TIMEOUT 10 LABELS "multicast")
 endif()
 
-# --- kissnet
-add_executable(udp_kiss_rx src/loopback_udp.cpp)
-target_compile_features(udp_kiss_rx PRIVATE cxx_std_17)
-target_include_directories(udp_kiss_rx PRIVATE ${kissnet_SOURCE_DIR})
-target_link_libraries(udp_kiss_rx PRIVATE ${WINSOCK_LIBRARIES})
-
 target_compile_definitions(multicast_tx PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>)
 
-add_test(NAME LoopbackUDP COMMAND udp_kiss_rx)
-set_tests_properties(LoopbackUDP PROPERTIES LABELS "kissnet")
+if(kissnet)
+  add_executable(udp_kiss_rx src/loopback_udp.cpp)
+  target_compile_features(udp_kiss_rx PRIVATE cxx_std_17)
+  target_include_directories(udp_kiss_rx PRIVATE ${kissnet_SOURCE_DIR})
+  target_link_libraries(udp_kiss_rx PRIVATE ${WINSOCK_LIBRARIES})
+  add_test(NAME LoopbackUDP COMMAND udp_kiss_rx)
+  set_tests_properties(LoopbackUDP PROPERTIES LABELS "kissnet")
+endif()
 
 # --- linux only
 if(LINUX)
   add_executable(get_interfaces src/linux/get_interfaces.c)
 
-  add_test(NAME InterfaceNames COMMAND get_interfaces)
-  set_tests_properties(InterfaceNames PROPERTIES
+  add_test(NAME LinuxInterfaceNames COMMAND get_interfaces)
+  set_tests_properties(LinuxInterfaceNames PROPERTIES
   TIMEOUT 5
   LABELS "linux"
   )
