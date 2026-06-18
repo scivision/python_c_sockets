@@ -21,8 +21,7 @@ We are beginning to implement these examples via C++17 header-only library
 This solves the issues of platform independence.
 
 Until the kissnet transition is complete, Windows users should use
-[WSL 2](https://docs.microsoft.com/en-us/windows/wsl/wsl2-install)
-as WSL 1 doesn't have a fully functional network stack.
+[WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 ## Build
 
